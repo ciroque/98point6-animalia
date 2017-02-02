@@ -9,6 +9,6 @@ object Main extends App {
   implicit val material = ActorMaterializer()
   implicit val executionContext = system.dispatcher
 
-  val service = new AnimaliaService()
+  val service = new AnimaliaApi()
   Http().bindAndHandle(service.routes, "0.0.0.0", 9806)
 }

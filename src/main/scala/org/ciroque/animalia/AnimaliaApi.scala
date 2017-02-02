@@ -3,11 +3,13 @@ package org.ciroque.animalia
 import akka.http.scaladsl.model.{ContentTypes, HttpEntity}
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
-import org.ciroque.animalia.controllers.FactService
+import org.ciroque.animalia.controllers.{FactApi, QueryApi}
 
-class AnimaliaService {
+class AnimaliaApi {
 
-  private val factService = new FactService {}
+  private val factApi = new FactApi {}
+
+  private val queryApi = new QueryApi {}
 
   private val rootPath = path("") {
     get {
@@ -15,5 +17,5 @@ class AnimaliaService {
     }
   }
 
-  val routes: Route = factService.routes ~ rootPath
+  val routes: Route = factApi.routes ~ queryApi.routes ~ rootPath
 }

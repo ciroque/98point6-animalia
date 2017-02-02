@@ -8,25 +8,32 @@ import akka.http.scaladsl.model.StatusCodes
 import akka.http.scaladsl.server.Route
 import akka.util.Timeout
 
-trait FactService extends HttpServiceBase {
+trait FactApi extends HttpServiceBase {
   implicit val timeout: Timeout = Timeout(3, TimeUnit.SECONDS)
 
   private val rootSegment = "animals"
   private val factSegment = "facts"
 
-  private val factsGetRoute = path(rootSegment / factSegment) {
-    pathEndOrSingleSlash {
+  private val factsGetRoute =
+    path(rootSegment / factSegment) {
       get {
         complete(StatusCodes.NotImplemented, "Hello")
       }
     }
-  }
 
-  private val factsPostRoute = path(rootSegment / factSegment) {
-    post {
-      complete(StatusCodes.NotImplemented, "Check back later")
+  private val factsPostRoute =
+    path(rootSegment / factSegment) {
+      post {
+        complete(StatusCodes.NotImplemented, "Check back later")
+      }
     }
-  }
 
-  val routes: Route = factsPostRoute ~ factsGetRoute
+  private val factsDeleteRoute =
+    path(rootSegment / factSegment) {
+      delete {
+        complete(StatusCodes.NotImplemented, "Check back later")
+      }
+    }
+
+  val routes: Route = factsPostRoute ~ factsGetRoute ~ factsDeleteRoute
 }
