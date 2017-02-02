@@ -1,0 +1,22 @@
+New log file opened at Thu Feb 02 09:52:53 PST 2017 by 20026@amotken
+Taking next connection to: 39270
+New client attempting to connect on port: 48978-39270
+  Address = /127.0.1.1:39270
+This client on port 48978 has uuid 4cec99c7-74a4-48e5-9012-6a6b481fe614 configName activator humanReadableName Activator protocolVersion 3 featureTags Vector()
+Connected Clients: activator-4cec99c7-74a4-48e5-9012-6a6b481fe614
+Taking next connection to: 39270
+Checking to see if clients are empty...
+We have 1 non-daemon clients, continuing serving connections.
+Taking next connection to: 39270
+Checking to see if clients are empty...
+We have 1 non-daemon clients, continuing serving connections.
+Taking next connection to: 39270
+Checking to see if clients are empty...
+We have 1 non-daemon clients, continuing serving connections.
+Taking next connection to: 39270
+Checking to see if clients are empty...
+No non-daemon clients connected after 3 min. Shutting down.
+Server socket thread exiting.
+0 clients open, will close them...
+All client sockets have been closed.
+Closing the 20026@amotken logs at Thu Feb 02 10:04:54 PST 2017, goodbye.
