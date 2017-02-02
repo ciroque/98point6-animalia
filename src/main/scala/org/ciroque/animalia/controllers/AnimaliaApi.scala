@@ -1,9 +1,8 @@
-package org.ciroque.animalia
+package org.ciroque.animalia.controllers
 
 import akka.http.scaladsl.model.{ContentTypes, HttpEntity}
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
-import org.ciroque.animalia.controllers.{FactApi, QueryApi}
 
 class AnimaliaApi {
 

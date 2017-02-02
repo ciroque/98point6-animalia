@@ -1,4 +1,4 @@
-package org.ciroque.animalia
+package org.ciroque.animalia.controllers
 
 import org.scalatest.{FlatSpec, Matchers}
 

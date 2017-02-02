@@ -3,6 +3,7 @@ package org.ciroque.animalia
 import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
 import akka.stream.ActorMaterializer
+import org.ciroque.animalia.controllers.AnimaliaApi
 
 object Main extends App {
   implicit val system = ActorSystem("98point6-animalia")
