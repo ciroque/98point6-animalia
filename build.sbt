@@ -5,10 +5,10 @@ version := "1.0"
 scalaVersion := "2.11.8"
 
 libraryDependencies ++= {
-  val akkaVersion = "2.4.4"
+  val akkaVersion = "2.4.8"
   Seq(
     "org.scala-lang" % "scala-reflect" % "2.11.8",
-    "org.scalatest"       %%  "scalatest" % "2.2.4" % "test",
+    "org.scalatest"       %%  "scalatest" % "3.0.1" % "test",
     "com.typesafe.akka"   %%  "akka-actor" % akkaVersion,
     "com.typesafe.akka"   %%  "akka-http" % "10.0.3",
     "com.typesafe.akka"   %%  "akka-http-testkit" % akkaVersion,
