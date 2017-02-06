@@ -42,12 +42,12 @@ class AnimalSpec extends FunSpec with Matchers {
       }
     }
 
-    describe("JSON formatting") {
-      it("serializes to json correctly") {
-        pending
-        val animal = Fact("bear", "isa", "mammal")
-        val json = animal.toJson
-      }
-    }
+//    describe("JSON formatting") {
+//      it("serializes to json correctly") {
+//        pending
+//        val animal = Fact("bear", "isa", "mammal")
+//        val json = animal.toJson
+//      }
+//    }
   }
 }
