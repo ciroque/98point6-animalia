@@ -3,12 +3,12 @@ package org.ciroque.animalia.models
 import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
 import spray.json.{DefaultJsonProtocol, RootJsonFormat}
 
-case class Animal(subject: String, rel: String, `object`: String)
+case class Fact(subject: String, rel: String, `object`: String)
 
-object Animal extends SprayJsonSupport with DefaultJsonProtocol {
+object Fact extends SprayJsonSupport with DefaultJsonProtocol {
 
   // Serialization to/from JSON
-  implicit val AnimalFormat: RootJsonFormat[Animal] = jsonFormat3(Animal.apply)
+  implicit val AnimalFormat: RootJsonFormat[Fact] = jsonFormat3(Fact.apply)
 
   // validation around the Relationship.
   // TODO: It would be better to store the valid relationships in a datastore and load them...

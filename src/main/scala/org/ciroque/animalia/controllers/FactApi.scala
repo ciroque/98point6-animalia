@@ -2,13 +2,12 @@ package org.ciroque.animalia.controllers
 
 import java.util.concurrent.TimeUnit
 
-import akka.http.javadsl.server.HttpServiceBase
-import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.model.StatusCodes
+import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
 import akka.util.Timeout
 
-trait FactApi extends HttpServiceBase {
+trait FactApi {
   implicit val timeout: Timeout = Timeout(3, TimeUnit.SECONDS)
 
   private val rootSegment = "animals"

@@ -1,6 +1,5 @@
 package org.ciroque.animalia.controllers
 
-import akka.http.scaladsl.model.StatusCodes
 import akka.http.scaladsl.testkit.ScalatestRouteTest
 import org.scalatest.{FunSpec, Matchers}
 
@@ -12,6 +11,16 @@ class FactApiSpec
 
   describe("FactApi") {
     val path = "/animals/facts"
+
+//    describe("Fact assertion") {
+//      it("handles a well-formed fact") {
+//        val fact = Fact("subject", "relationship", "object")
+//        Post(path, fact) ~> routes ~> check {
+//          status should equal(StatusCodes.OK)
+//          // TODO: assert the response...
+//        }
+//      }
+//    }
 
     describe("handled HTTP Methods") {
       it("handles POST requests") {
@@ -38,6 +47,12 @@ class FactApiSpec
 
       it("does NOT handle PUT requests") {
         Put(path) ~> routes ~> check {
+          handled should equal(false)
+        }
+      }
+
+      it("does NOT handle HEAD requests") {
+        Head(path) ~> routes ~> check {
           handled should equal(false)
         }
       }
