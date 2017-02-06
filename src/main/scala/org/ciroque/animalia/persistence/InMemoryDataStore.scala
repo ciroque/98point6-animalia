@@ -22,9 +22,20 @@ trait InMemoryDataStore extends DataStore {
     }
   }
 
-  override def store(fact: Fact): Future[Option[UUID]] = {
+  override def store(fact: Fact): Future[UUID] = {
     val uuid = UUID.randomUUID()
     facts = facts + (uuid -> fact)
-    Future.successful(Some(uuid))
+    Future.successful(uuid)
+  }
+
+  override def delete(uuid: UUID): Future[Option[UUID]] = {
+    Future {
+      if(facts.keySet.contains(uuid)) {
+        facts = facts - uuid
+        Some(uuid)
+      } else {
+        None
+      }
+    }
   }
 }

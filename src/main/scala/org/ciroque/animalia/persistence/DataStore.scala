@@ -6,8 +6,15 @@ import org.ciroque.animalia.models.Fact
 
 import scala.concurrent.Future
 
+/*
+  The data store interface.
+  The Fact and Query services define the operations necessary to support the API implementation.
+
+  This allows easy mocking in tests and the ability to create and migrate to / from various backend databases.
+ */
 trait DataStore {
   def find(uuid: UUID): Future[Option[Fact]]
   def find(fact: Fact): Future[Option[UUID]]
-  def store(fact: Fact): Future[Option[UUID]]
+  def store(fact: Fact): Future[UUID]
+  def delete(uuid: UUID): Future[Option[UUID]]
 }

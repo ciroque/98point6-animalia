@@ -2,11 +2,16 @@ package org.ciroque.animalia.services
 
 import java.util.UUID
 
-import org.ciroque.animalia.models.{Fact, FactFailedResult, SaveFactResult}
+import org.ciroque.animalia.models.{Fact, FactFailedResult, FactIdResult, FactIdResult$}
 import org.ciroque.animalia.persistence.InMemoryDataStore
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.{FunSpec, Matchers}
 
+/*
+  Unit tests for the FactService.
+
+  This test suite is going to use the Cake Pattern for dependency injections instead of a mock library.
+ */
 class FactServiceTest
   extends FunSpec
   with ScalaFutures
@@ -14,7 +19,10 @@ class FactServiceTest
 
   describe("FactService") {
     describe("saveFact") {
+
       val service = new FactService {
+
+        // dependency injection of the data store for tests
         implicit val dataStore = new InMemoryDataStore {
 
         }
@@ -25,7 +33,7 @@ class FactServiceTest
         val factResultFuture = service.upsert(fact)
 
         whenReady(factResultFuture) {
-          factResult: SaveFactResult =>
+          factResult: FactIdResult =>
             factResult.id shouldNot be(null)
         }
       }
@@ -35,10 +43,10 @@ class FactServiceTest
         val firstResultFuture = service.upsert(fact)
 
         whenReady(firstResultFuture) {
-          firstResult: SaveFactResult =>
+          firstResult: FactIdResult =>
           val secondFactFuture = service.upsert(fact)
           whenReady(secondFactFuture) {
-            secondResult: SaveFactResult =>
+            secondResult: FactIdResult =>
             secondResult.id shouldBe firstResult.id
           }
         }
@@ -69,6 +77,9 @@ class FactServiceTest
       )
 
       val service = new FactService {
+
+        // dependency injection of the data store for tests
+        // for this group of tests the data is being injected as well
         implicit val dataStore = new InMemoryDataStore {
           facts = data
         }
@@ -86,6 +97,42 @@ class FactServiceTest
         whenReady(service.find(uuid)) {
           foundFact: Option[Fact] =>
             foundFact shouldBe None
+        }
+      }
+    }
+
+    describe("deleteFact") {
+      val firstUUID = UUID.randomUUID()
+      val firstFact = Fact("subject1", "has", "object1")
+
+      val secondUUID = UUID.randomUUID()
+      val secondFact = Fact("subject2", "has", "object2")
+
+      val data = Map[UUID, Fact](
+        firstUUID -> firstFact,
+        secondUUID -> secondFact
+      )
+
+      val service = new FactService {
+
+        // dependency injection of the data store for tests
+        // for this group of tests the data is being injected as well
+        implicit val dataStore = new InMemoryDataStore {
+          facts = data
+        }
+      }
+
+      it("returns the Some(id) when the given id is found") {
+        whenReady(service.delete(secondUUID)) {
+          factIdResult: Option[FactIdResult] =>
+            factIdResult.get.id shouldBe secondUUID
+        }
+      }
+
+      it("returns None when the given id is not found") {
+        whenReady(service.delete(UUID.randomUUID())) {
+          factIdResult: Option[FactIdResult] =>
+            factIdResult shouldBe None
         }
       }
     }
