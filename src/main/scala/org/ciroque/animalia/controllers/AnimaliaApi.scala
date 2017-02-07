@@ -3,18 +3,20 @@ package org.ciroque.animalia.controllers
 import akka.http.scaladsl.model.{ContentTypes, HttpEntity}
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
-import org.ciroque.animalia.persistence.{DataStore, InMemoryDataStore}
+import org.ciroque.animalia.data.Neo4jDataStore
+import org.ciroque.animalia.persistence.DataStore
 import org.ciroque.animalia.services.FactService
 
 class AnimaliaApi {
 
   private val factApi = new FactApi {
     override implicit val factService: FactService = new FactService {
-      override implicit val dataStore: DataStore = new InMemoryDataStore {}
+      override implicit val dataStore: DataStore = Neo4jDataStore("bolt://localhost:7687", "animalia", "Password23")
     }
   }
 
-  private val queryApi = new QueryApi {}
+  private val queryApi = new QueryApi {
+}
 
   private val rootPath = path("") {
     get {

@@ -24,10 +24,7 @@ trait FactService {
 
   def upsert(fact: Fact): Future[FactIdResult] = {
     if(Fact.relationshipIsValid(fact.rel)) {
-      dataStore.find(fact).flatMap {
-        case Some(uuid: UUID) => Future.successful(FactIdResult(uuid))
-        case None => insert(fact)
-      }
+      dataStore.store(fact).map { uuid: UUID => FactIdResult(uuid) }
     } else {
       Future.failed(FactFailedResult.DefaultErrorResult)
     }

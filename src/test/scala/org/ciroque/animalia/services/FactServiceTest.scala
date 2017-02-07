@@ -2,7 +2,7 @@ package org.ciroque.animalia.services
 
 import java.util.UUID
 
-import org.ciroque.animalia.models.{Fact, FactFailedResult, FactIdResult, FactIdResult$}
+import org.ciroque.animalia.models.{Fact, FactFailedResult, FactIdResult}
 import org.ciroque.animalia.persistence.InMemoryDataStore
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.{FunSpec, Matchers}

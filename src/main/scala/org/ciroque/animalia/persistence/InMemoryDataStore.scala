@@ -1,10 +1,9 @@
 package org.ciroque.animalia.persistence
 import java.util.UUID
 
-import org.ciroque.animalia.models.Fact
+import org.ciroque.animalia.models.{Fact, FactIdResult}
 
 import scala.concurrent.Future
-
 import scala.concurrent.ExecutionContext.Implicits.global
 
 trait InMemoryDataStore extends DataStore {
@@ -23,9 +22,12 @@ trait InMemoryDataStore extends DataStore {
   }
 
   override def store(fact: Fact): Future[UUID] = {
-    val uuid = UUID.randomUUID()
-    facts = facts + (uuid -> fact)
-    Future.successful(uuid)
+    find(fact).flatMap {
+      case Some(uuid: UUID) => Future(uuid)
+      case None =>    val uuid = UUID.randomUUID()
+        facts = facts + (uuid -> fact)
+        Future.successful(uuid)
+    }
   }
 
   override def delete(uuid: UUID): Future[Option[UUID]] = {
