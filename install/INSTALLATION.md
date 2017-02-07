@@ -12,4 +12,15 @@ Decide where to host. Preference is to an EC2 instance running Ubuntu 16.04 serv
 6) Allow execution of Neo4j installation script: ```chmod +x install-neo4j.sh```
 7) Install Java: ```sudo ./install-oracle-java.sh``` (Note that you will need to accept the license agreement!)
 8) Install Neo4j: ```sudo ./install-neo4j.sh```
+9) Install httpie: ```sudo apt install httpie```
+10) Change the Neo4j password: ```http -a neo4j:neo4j POST http://localhost:7474/user/neo4j/password password=Password23```
+11) (Optional) Allow remote connections to Neo4j: 
+```
+    sudo vim /etc/neo4j/neo4j.conf
+    :s/#dbms.connector.http.listen_address=:7474/dbms.connector.http.listen_address=0.0.0.0:7474/g
+    :x
+    
+    sudo systemctl restart neo4j
+```
+12) (Optional) Connect to Neo4j server web app: http://<public-ip>:7474/browser/
 

@@ -11,7 +11,7 @@ class AnimaliaApi {
 
   private val factApi = new FactApi {
     override implicit val factService: FactService = new FactService {
-      override implicit val dataStore: DataStore = Neo4jDataStore("bolt://localhost:7687", "animalia", "Password23")
+      override implicit val dataStore: DataStore = Neo4jDataStore("bolt://localhost:7687", "neo4j", "Password23")
     }
   }
 
