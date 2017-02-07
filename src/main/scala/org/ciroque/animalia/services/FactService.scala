@@ -29,7 +29,7 @@ trait FactService {
         case None => insert(fact)
       }
     } else {
-      Future.failed(FactFailedResult("Failed to parse your fact"))
+      Future.failed(FactFailedResult.DefaultErrorResult)
     }
   }
 

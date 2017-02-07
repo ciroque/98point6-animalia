@@ -11,7 +11,7 @@
 #   ANIMALIA_BASE_URL  Base url of the animalia service to test. Defaults to http://localhost:8080
 #
 
-ANIMALIA_BASE_URL=${ANIMALIA_BASE_URL:-http://localhost:8080}
+ANIMALIA_BASE_URL=${ANIMALIA_BASE_URL:-http://localhost:9806}
 # Remove trailing slash, if one is present, from base url.
 ANIMALIA_BASE_URL=${ANIMALIA_BASE_URL%/}
 

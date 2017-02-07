@@ -9,6 +9,7 @@ libraryDependencies ++= {
   Seq(
     "org.scala-lang" % "scala-reflect" % "2.11.8",
     "org.scalatest"       %%  "scalatest" % "3.0.1" % "test",
+    "org.easymock"        % "easymock" % "3.4" % "test",
     "com.typesafe.akka"   %%  "akka-actor" % akkaVersion,
     "com.typesafe.akka"   %%  "akka-http" % "10.0.3",
     "com.typesafe.akka"   %%  "akka-http-testkit" % akkaVersion,
