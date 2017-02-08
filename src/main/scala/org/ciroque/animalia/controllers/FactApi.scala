@@ -10,8 +10,8 @@ import akka.util.Timeout
 import org.ciroque.animalia.models.{Fact, FactFailedResult, FactIdResult}
 import org.ciroque.animalia.services.FactService
 import spray.json._
-import scala.util.{Failure, Success}
 
+import scala.util.{Failure, Success}
 import scala.concurrent.ExecutionContext.Implicits.global
 
 trait FactApi {
@@ -48,15 +48,22 @@ trait FactApi {
     }
 
   private val factsDeleteRoute =
-    path(rootSegment / factSegment) {
-      delete {
-        complete(StatusCodes.NotImplemented, "Check back later")
-      }
+    path(rootSegment / factSegment / JavaUUID) {
+      uuid =>
+        delete {
+          onComplete(factService.delete(uuid)) {
+            case Success(deleteResult: Option[FactIdResult]) =>
+              deleteResult match {
+                case Some(factIdResult: FactIdResult) => complete(formatFactIdResult(factIdResult))
+                case None => complete(formatNotFoundResult())
+              }
+          }
+        }
     }
 
   val routes: Route = factsPostRoute ~ factsGetRoute ~ factsDeleteRoute
 
-  def formatFactIdResult(factIdResult: FactIdResult): HttpResponse = {
+  private def formatFactIdResult(factIdResult: FactIdResult): HttpResponse = {
     HttpResponse(
       StatusCodes.OK,
       corsHeaders,
@@ -64,7 +71,11 @@ trait FactApi {
     )
   }
 
-  def formatFactFailedResult(factFailedResult: FactFailedResult): HttpResponse = {
+  private def formatFactFailedResult(factFailedResult: FactFailedResult): HttpResponse = {
     HttpResponse(StatusCodes.BadRequest, corsHeaders, HttpEntity(MediaTypes.`application/json`, factFailedResult.toJson.toString()))
+  }
+
+  private def formatNotFoundResult(): HttpResponse = {
+    HttpResponse(StatusCodes.NotFound, corsHeaders, HttpEntity(MediaTypes.`application/json`, ""))
   }
 }

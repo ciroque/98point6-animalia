@@ -10,7 +10,7 @@ import org.scalatest.{FunSpec, Matchers}
 /*
   Unit tests for the FactService.
 
-  This test suite is going to use the Cake Pattern for dependency injections instead of a mock library.
+  This test suite uses the Cake Pattern for dependency injections instead of a mock library.
  */
 class FactServiceTest
   extends FunSpec

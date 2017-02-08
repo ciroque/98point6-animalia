@@ -12,6 +12,13 @@ import org.easymock.EasyMock._
 
 import scala.concurrent.Future
 
+/*
+    Unit tests for the FactAPI.
+
+    This test suite uses EasyMock to handle the dependency injection for the Fact Service.
+
+    Point Of Discussion. Libraries vs Hand-crafted mocks...
+ */
 class FactApiSpec
   extends FunSpec
     with FactApi
@@ -73,6 +80,34 @@ class FactApiSpec
       }
     }
 
+    describe("Fact Management") {
+      it("returns the uuid of a deleted fact on success") {
+        val response = FactIdResult(UUID.randomUUID())
+        expecting {
+          mockFactService.delete(response.id).andReturn(Future(Some(response)))
+        }
+        whenExecuting(mockFactService) {
+          Delete(s"$path/${response.id.toString}") ~> routes ~> check {
+            status shouldBe StatusCodes.OK
+            responseAs[FactIdResult] shouldBe response
+          }
+        }
+      }
+
+      it("returns 404 with no body for a non-existent fact") {
+        val response = FactIdResult(UUID.randomUUID())
+        expecting {
+          mockFactService.delete(response.id).andReturn(Future(None))
+        }
+        whenExecuting(mockFactService) {
+          Delete(s"$path/${response.id.toString}") ~> routes ~> check {
+            status shouldBe StatusCodes.NotFound
+            responseAs[String] shouldBe ""
+          }
+        }
+      }
+    }
+
     describe("handled HTTP Methods") {
       it("handles POST requests") {
         val fact = Fact("subject", "relationship", "object")
@@ -88,7 +123,7 @@ class FactApiSpec
       }
 
       it("handles DELETE requests") {
-        Delete(path) ~> routes ~> check {
+        Delete(s"$path/${UUID.randomUUID()}") ~> routes ~> check {
           handled should equal(true)
         }
       }
@@ -99,6 +134,12 @@ class FactApiSpec
 
       it("does NOT handle PUT requests") {
         Put(path) ~> routes ~> check {
+          handled should equal(false)
+        }
+      }
+
+      it("does NOT handle DELETE request with no UUID") {
+        Delete(path) ~> routes ~> check {
           handled should equal(false)
         }
       }
