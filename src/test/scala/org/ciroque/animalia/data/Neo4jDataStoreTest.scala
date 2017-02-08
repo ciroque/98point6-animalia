@@ -20,11 +20,30 @@ class Neo4jDataStoreTest
   }
 
   describe("Neo4jDataStoreTest") {
-    it("can connect") {
+    it("adds a fact") {
       val fact = Fact("bear", "isa", "mammal")
       whenReady(dataStore.store(fact)) {
         uuid: UUID =>
           println(uuid.toString)
+      }
+    }
+
+    it("deletes a fact") {
+      val fact = Fact("DELETE-METHOD", "isa", "GOOD-METHOD")
+      whenReady(dataStore.store(fact)) {
+        uuid: UUID =>
+          whenReady(dataStore.delete(uuid)) {
+            deletedUuid: Option[UUID] =>
+              deletedUuid.get shouldBe uuid
+          }
+      }
+    }
+
+    it("does not delete a non-existent fact") {
+      val uuid = UUID.randomUUID()
+      whenReady(dataStore.delete(uuid)) {
+        deletedUuid: Option[UUID] =>
+          deletedUuid shouldBe None
       }
     }
   }

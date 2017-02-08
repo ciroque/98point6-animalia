@@ -40,7 +40,17 @@ trait Neo4jDataStore extends DataStore {
     Future(uuid)
   }
 
-  override def delete(uuid: UUID): Future[Option[UUID]] = ???
+  override def delete(uuid: UUID): Future[Option[UUID]] = {
+    val result = withSession {
+      s"MATCH ()-[r { uuid: '${uuid.toString}' }]-() DELETE r;"
+    }
+
+    if(result.summary().counters().relationshipsDeleted() == 1) {
+      Future(Some(uuid))
+    } else {
+      Future(None)
+    }
+  }
 
   /*
   Session management
