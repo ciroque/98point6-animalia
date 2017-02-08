@@ -1,0 +1,11 @@
+[Unit]
+Description=Animalia Service
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=CLASSPATH=/usr/share/animalia/lib/* /usr/bin/java org.ciroque.animalia.Main
+
+[Install]
+WantedBy=multi-user.target
+Alias=animalia.service

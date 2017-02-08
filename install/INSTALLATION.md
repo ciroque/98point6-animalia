@@ -24,3 +24,6 @@ Decide where to host. Preference is to an EC2 instance running Ubuntu 16.04 serv
 ```
 12) (Optional) Connect to Neo4j server web app: http://<public-ip>:7474/browser/
 
+## Service Deployment
+
+

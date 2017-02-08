@@ -21,3 +21,17 @@ libraryDependencies ++= {
 }
 
 fork in run := true
+
+/*
+      Native Packager Properties
+ */
+
+enablePlugins(JavaServerAppPackaging)
+
+packageSummary := "Animalia Homework for 98point6"
+
+packageDescription := "Animalia"
+
+maintainer := "Steve Wagner <scalawagz@outlook.com>"
+
+name := "Animalia"
