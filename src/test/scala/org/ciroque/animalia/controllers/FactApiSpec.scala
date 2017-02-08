@@ -82,28 +82,59 @@ class FactApiSpec
     }
 
     describe("Fact Management") {
-      it("returns the uuid of a deleted fact on success") {
-        val response = FactIdResult(Any.uuid)
-        expecting {
-          mockFactService.delete(response.id).andReturn(Future(Some(response)))
+      describe("delete") {
+        it("returns the uuid of a deleted fact on success") {
+          val response = FactIdResult(Any.uuid)
+          expecting {
+            mockFactService.delete(response.id).andReturn(Future(Some(response)))
+          }
+          whenExecuting(mockFactService) {
+            Delete(s"$path/${response.id.toString}") ~> routes ~> check {
+              status shouldBe StatusCodes.OK
+              responseAs[FactIdResult] shouldBe response
+            }
+          }
         }
-        whenExecuting(mockFactService) {
-          Delete(s"$path/${response.id.toString}") ~> routes ~> check {
-            status shouldBe StatusCodes.OK
-            responseAs[FactIdResult] shouldBe response
+
+        it("returns 404 with no body for a non-existent fact") {
+          val response = FactIdResult(Any.uuid)
+          expecting {
+            mockFactService.delete(response.id).andReturn(Future(None))
+          }
+          whenExecuting(mockFactService) {
+            Delete(s"$path/${response.id.toString}") ~> routes ~> check {
+              status shouldBe StatusCodes.NotFound
+              responseAs[String] shouldBe ""
+            }
           }
         }
       }
 
-      it("returns 404 with no body for a non-existent fact") {
-        val response = FactIdResult(Any.uuid)
-        expecting {
-          mockFactService.delete(response.id).andReturn(Future(None))
+      describe("get") {
+        it("returns a fact when found") {
+          val uuid = UUID.randomUUID()
+          val fact = Fact(Any.string(), "isa", Any.string())
+          expecting {
+            mockFactService.find(uuid).andReturn(Future(Some(fact)))
+          }
+          whenExecuting(mockFactService) {
+            Get(s"$path/${uuid.toString}") ~> routes ~> check {
+              status shouldBe StatusCodes.OK
+              responseAs[Fact] shouldBe fact
+            }
+          }
         }
-        whenExecuting(mockFactService) {
-          Delete(s"$path/${response.id.toString}") ~> routes ~> check {
-            status shouldBe StatusCodes.NotFound
-            responseAs[String] shouldBe ""
+
+        it("returns a 404 when not found") {
+          val uuid = UUID.randomUUID()
+          expecting {
+            mockFactService.find(uuid).andReturn(Future(None))
+          }
+          whenExecuting(mockFactService) {
+            Get(s"$path/${uuid.toString}") ~> routes ~> check {
+              status shouldBe StatusCodes.NotFound
+              responseAs[String] shouldBe ""
+            }
           }
         }
       }
@@ -118,7 +149,7 @@ class FactApiSpec
       }
 
       it("handles GET requests") {
-        Get(path) ~> routes ~> check {
+        Get(s"$path/${Any.uuid.toString}") ~> routes ~> check {
           handled should equal(true)
         }
       }

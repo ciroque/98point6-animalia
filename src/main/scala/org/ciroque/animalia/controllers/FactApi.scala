@@ -28,9 +28,16 @@ trait FactApi {
   private val factSegment = "facts"
 
   private val factsGetRoute =
-    path(rootSegment / factSegment) {
+    path(rootSegment / factSegment / JavaUUID) {
+      uuid =>
       get {
-        complete(StatusCodes.NotImplemented, "Hello")
+        onComplete(factService.find(uuid)) {
+          case Success(findFactResult: Option[Fact]) =>
+            findFactResult match {
+              case Some(fact: Fact) => complete(formatOkResponse(fact.toJson))
+              case None => complete(formatNotFoundResponse())
+            }
+        }
       }
     }
 
@@ -40,8 +47,8 @@ trait FactApi {
         entity(as[Fact]) {
           fact: Fact =>
             onComplete(factService.upsert(fact)) {
-              case Success(factIdResult: FactIdResult) => complete(formatFactIdResult(factIdResult))
-              case Failure(factFailedResult: FactFailedResult) => complete(formatFactFailedResult(factFailedResult))
+              case Success(factIdResult: FactIdResult) => complete(formatOkResponse(factIdResult.toJson))
+              case Failure(factFailedResult: FactFailedResult) => complete(formatBadRequestResponse(factFailedResult))
             }
         }
       }
@@ -54,8 +61,8 @@ trait FactApi {
           onComplete(factService.delete(uuid)) {
             case Success(deleteResult: Option[FactIdResult]) =>
               deleteResult match {
-                case Some(factIdResult: FactIdResult) => complete(formatFactIdResult(factIdResult))
-                case None => complete(formatNotFoundResult())
+                case Some(factIdResult: FactIdResult) => complete(formatOkResponse(factIdResult.toJson))
+                case None => complete(formatNotFoundResponse())
               }
           }
         }
@@ -63,19 +70,19 @@ trait FactApi {
 
   val routes: Route = factsPostRoute ~ factsGetRoute ~ factsDeleteRoute
 
-  private def formatFactIdResult(factIdResult: FactIdResult): HttpResponse = {
+  private def formatOkResponse(json: JsValue): HttpResponse = {
     HttpResponse(
       StatusCodes.OK,
       corsHeaders,
-      HttpEntity(MediaTypes.`application/json`, factIdResult.toJson.toString())
+      HttpEntity(MediaTypes.`application/json`, json.toString())
     )
   }
 
-  private def formatFactFailedResult(factFailedResult: FactFailedResult): HttpResponse = {
+  private def formatBadRequestResponse(factFailedResult: FactFailedResult): HttpResponse = {
     HttpResponse(StatusCodes.BadRequest, corsHeaders, HttpEntity(MediaTypes.`application/json`, factFailedResult.toJson.toString()))
   }
 
-  private def formatNotFoundResult(): HttpResponse = {
+  private def formatNotFoundResponse(): HttpResponse = {
     HttpResponse(StatusCodes.NotFound, corsHeaders, HttpEntity(MediaTypes.`application/json`, ""))
   }
 }

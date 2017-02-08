@@ -31,7 +31,9 @@ class Neo4jDataStoreTest
       }
 
       it("adds a fact long names") {
-        val fact = Fact(Any.string(1000), "isa", Any.string(1000))
+        val subject = Any.string(1000)
+        val `object` = Any.string(1000)
+        val fact = Fact(subject, "isa", `object`)
         whenReady(dataStore.store(fact)) {
           uuid: UUID =>
             uuid shouldNot be(null)
