@@ -3,7 +3,7 @@ package org.ciroque.animalia.models
 import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
 import spray.json._
 
-case class FactFailedResult(message: String) extends Throwable(message) { }
+case class FactFailedResult(message: String) extends Throwable(message) {}
 
 object FactFailedResult
   extends SprayJsonSupport

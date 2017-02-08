@@ -6,9 +6,9 @@ import org.scalatest.{FunSpec, Matchers}
 
 class QueryApiSpec
   extends FunSpec
-  with QueryApi
-  with ScalatestRouteTest
-  with Matchers {
+    with QueryApi
+    with ScalatestRouteTest
+    with Matchers {
 
   describe("QueryApi") {
 
@@ -17,7 +17,7 @@ class QueryApiSpec
 
       it("handles GET requests") {
         Get(path) ~> routes ~> check {
-          status should equal(StatusCodes.NotImplemented)
+          status shouldBe StatusCodes.NotImplemented
         }
       }
 
@@ -26,19 +26,19 @@ class QueryApiSpec
 
         it("does NOT handle POST requests") {
           Post(path + "/") ~> routes ~> check {
-            handled should equal(false)
+            handled shouldBe false
           }
         }
 
         it("does NOT handle PUT requests") {
           Put(path) ~> routes ~> check {
-            handled should equal(false)
+            handled shouldBe false
           }
         }
 
         it("does NOT handle DELETE requests") {
           Delete(path) ~> routes ~> check {
-            handled should equal(false)
+            handled shouldBe false
           }
         }
       }
@@ -49,7 +49,7 @@ class QueryApiSpec
 
       it("handles GET requests") {
         Get(path) ~> routes ~> check {
-          status should equal(StatusCodes.NotImplemented)
+          status shouldBe StatusCodes.NotImplemented
         }
       }
 
@@ -58,19 +58,19 @@ class QueryApiSpec
 
         it("does NOT handle POST requests") {
           Post(path) ~> routes ~> check {
-            handled should equal(false)
+            handled shouldBe false
           }
         }
 
         it("does NOT handle PUT requests") {
           Put(path) ~> routes ~> check {
-            handled should equal(false)
+            handled shouldBe false
           }
         }
 
         it("does NOT handle DELETE requests") {
           Delete(path) ~> routes ~> check {
-            handled should equal(false)
+            handled shouldBe false
           }
         }
       }

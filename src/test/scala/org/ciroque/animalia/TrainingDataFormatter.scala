@@ -1,4 +1,4 @@
-  package org.ciroque.animalia
+package org.ciroque.animalia
 
 import org.ciroque.animalia.models.Fact
 

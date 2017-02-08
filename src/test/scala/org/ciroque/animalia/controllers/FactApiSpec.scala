@@ -7,9 +7,9 @@ import akka.http.scaladsl.testkit.ScalatestRouteTest
 import org.ciroque.animalia.Any
 import org.ciroque.animalia.models.{Fact, FactFailedResult, FactIdResult}
 import org.ciroque.animalia.services.FactService
+import org.easymock.EasyMock._
 import org.scalatest.easymock.EasyMockSugar
 import org.scalatest.{BeforeAndAfterEach, FunSpec, Matchers}
-import org.easymock.EasyMock._
 
 import scala.concurrent.Future
 
@@ -48,7 +48,7 @@ class FactApiSpec
         }
         whenExecuting(mockFactService) {
           Post(path, fact) ~> routes ~> check {
-            status should equal(StatusCodes.OK)
+            status shouldBe StatusCodes.OK
             responseAs[FactIdResult] shouldBe response
           }
         }
@@ -61,7 +61,7 @@ class FactApiSpec
         }
         whenExecuting(mockFactService) {
           Post(path, fact) ~> routes ~> check {
-            status should equal(StatusCodes.BadRequest)
+            status shouldBe StatusCodes.BadRequest
             responseAs[FactFailedResult] shouldBe FactFailedResult.DefaultErrorResult
           }
         }
@@ -74,8 +74,8 @@ class FactApiSpec
         }
         whenExecuting(mockFactService) {
           Post(path, fact) ~> routes ~> check {
-            status should equal(StatusCodes.InternalServerError)
-            responseAs[String] should include("There was an internal server error.")
+            status shouldBe StatusCodes.InternalServerError
+            responseAs[String] should include("an internal error occurred. please reference '")
           }
         }
       }
@@ -144,19 +144,19 @@ class FactApiSpec
       it("handles POST requests") {
         val fact = Fact("subject", "relationship", "object")
         Post(path, fact) ~> routes ~> check {
-          handled should equal(true)
+          handled shouldBe true
         }
       }
 
       it("handles GET requests") {
         Get(s"$path/${Any.uuid.toString}") ~> routes ~> check {
-          handled should equal(true)
+          handled shouldBe true
         }
       }
 
       it("handles DELETE requests") {
         Delete(s"$path/${Any.uuid}") ~> routes ~> check {
-          handled should equal(true)
+          handled shouldBe true
         }
       }
     }
@@ -166,19 +166,19 @@ class FactApiSpec
 
       it("does NOT handle PUT requests") {
         Put(path) ~> routes ~> check {
-          handled should equal(false)
+          handled shouldBe false
         }
       }
 
       it("does NOT handle DELETE request with no UUID") {
         Delete(path) ~> routes ~> check {
-          handled should equal(false)
+          handled shouldBe false
         }
       }
 
       it("does NOT handle HEAD requests") {
         Head(path) ~> routes ~> check {
-          handled should equal(false)
+          handled shouldBe false
         }
       }
     }

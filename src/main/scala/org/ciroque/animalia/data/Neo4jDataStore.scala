@@ -6,9 +6,8 @@ import org.ciroque.animalia.models.Fact
 import org.ciroque.animalia.persistence.DataStore
 import org.neo4j.driver.v1._
 
-import scala.concurrent.Future
-
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 trait Neo4jDataStore extends DataStore {
   implicit val neo4jDriver: Driver
@@ -18,7 +17,7 @@ trait Neo4jDataStore extends DataStore {
       s"MATCH (s: Subject)-[r { uuid: '${uuid.toString}' }]-(o: Object) RETURN s.name as subject, type(r) as relationship, o.name as object;"
     }
 
-    if(result.hasNext) {
+    if (result.hasNext) {
       val record = result.next()
       Future(Some(Fact(record.get("subject").asString(), record.get("relationship").asString(), record.get("object").asString())))
     } else {
@@ -56,7 +55,7 @@ trait Neo4jDataStore extends DataStore {
       s"MATCH ()-[r { uuid: '${uuid.toString}' }]-() DELETE r;"
     }
 
-    if(result.summary().counters().relationshipsDeleted() == 1) {
+    if (result.summary().counters().relationshipsDeleted() == 1) {
       Future(Some(uuid))
     } else {
       Future(None)

@@ -4,8 +4,8 @@ import java.util.UUID
 
 import org.ciroque.animalia.Any
 import org.ciroque.animalia.models.Fact
-import org.scalatest.{BeforeAndAfterEach, FunSpec, Matchers}
 import org.scalatest.concurrent._
+import org.scalatest.{BeforeAndAfterEach, FunSpec, Matchers}
 
 class Neo4jDataStoreTest
   extends FunSpec

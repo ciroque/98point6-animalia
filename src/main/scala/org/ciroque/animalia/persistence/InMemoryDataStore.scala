@@ -1,4 +1,5 @@
 package org.ciroque.animalia.persistence
+
 import java.util.UUID
 
 import org.ciroque.animalia.models.Fact
@@ -11,14 +12,14 @@ trait InMemoryDataStore extends DataStore {
 
   override def find(uuid: UUID): Future[Option[Fact]] = {
     Future {
-      facts.find { case (id: UUID, f: Fact) => id == uuid }.map( f => f._2)
+      facts.find { case (id: UUID, f: Fact) => id == uuid }.map(f => f._2)
     }
   }
 
   override def store(fact: Fact): Future[UUID] = {
     find(fact).flatMap {
       case Some(uuid: UUID) => Future(uuid)
-      case None =>    val uuid = UUID.randomUUID()
+      case None => val uuid = UUID.randomUUID()
         facts = facts + (uuid -> fact)
         Future.successful(uuid)
     }
@@ -26,7 +27,7 @@ trait InMemoryDataStore extends DataStore {
 
   override def delete(uuid: UUID): Future[Option[UUID]] = {
     Future {
-      if(facts.keySet.contains(uuid)) {
+      if (facts.keySet.contains(uuid)) {
         facts = facts - uuid
         Some(uuid)
       } else {

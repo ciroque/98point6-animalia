@@ -16,7 +16,7 @@ class AnimaliaApi {
   }
 
   private val queryApi = new QueryApi {
-}
+  }
 
   private val rootPath = path("") {
     get {

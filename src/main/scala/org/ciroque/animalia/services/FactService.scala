@@ -12,10 +12,10 @@ trait FactService {
   implicit val dataStore: DataStore
 
   def delete(uuid: UUID): Future[Option[FactIdResult]] = {
-      dataStore.delete(uuid).flatMap {
-        case Some(uuid: UUID) => Future.successful(Some(FactIdResult(uuid)))
-        case None => Future.successful(None)
-      }
+    dataStore.delete(uuid).flatMap {
+      case Some(uuid: UUID) => Future.successful(Some(FactIdResult(uuid)))
+      case None => Future.successful(None)
+    }
   }
 
   def find(uuid: UUID): Future[Option[Fact]] = {
@@ -23,14 +23,10 @@ trait FactService {
   }
 
   def upsert(fact: Fact): Future[FactIdResult] = {
-    if(Fact.relationshipIsValid(fact.rel)) {
+    if (Fact.relationshipIsValid(fact.rel)) {
       dataStore.store(fact).map { uuid: UUID => FactIdResult(uuid) }
     } else {
       Future.failed(FactFailedResult.DefaultErrorResult)
     }
-  }
-
-  private def insert(fact: Fact): Future[FactIdResult] = {
-    dataStore.store(fact).map { uuid: UUID => FactIdResult(uuid) }
   }
 }

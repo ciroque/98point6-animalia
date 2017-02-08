@@ -5,7 +5,7 @@ import java.util.UUID
 import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
 import spray.json._
 
-case class FactIdResult(id: UUID) { }
+case class FactIdResult(id: UUID) {}
 
 object FactIdResult
   extends SprayJsonSupport

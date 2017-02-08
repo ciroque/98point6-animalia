@@ -15,8 +15,8 @@ import org.scalatest.{FunSpec, Matchers}
  */
 class FactServiceTest
   extends FunSpec
-  with ScalaFutures
-  with Matchers {
+    with ScalaFutures
+    with Matchers {
 
   describe("FactService") {
     describe("saveFact") {
@@ -45,11 +45,11 @@ class FactServiceTest
 
         whenReady(firstResultFuture) {
           firstResult: FactIdResult =>
-          val secondFactFuture = service.upsert(fact)
-          whenReady(secondFactFuture) {
-            secondResult: FactIdResult =>
-            secondResult.id shouldBe firstResult.id
-          }
+            val secondFactFuture = service.upsert(fact)
+            whenReady(secondFactFuture) {
+              secondResult: FactIdResult =>
+                secondResult.id shouldBe firstResult.id
+            }
         }
       }
 
@@ -59,7 +59,7 @@ class FactServiceTest
 
         whenReady(factResultFuture.failed) {
           factFailedResult =>
-            factFailedResult shouldBe a [FactFailedResult]
+            factFailedResult shouldBe a[FactFailedResult]
             factFailedResult.getMessage shouldBe "Failed to parse your fact"
         }
       }
