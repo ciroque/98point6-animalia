@@ -14,7 +14,6 @@ import scala.concurrent.Future
  */
 trait DataStore {
   def find(uuid: UUID): Future[Option[Fact]]
-  def find(fact: Fact): Future[Option[UUID]]
   def store(fact: Fact): Future[UUID]
   def delete(uuid: UUID): Future[Option[UUID]]
 }

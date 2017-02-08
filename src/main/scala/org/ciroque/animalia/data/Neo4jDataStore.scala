@@ -15,8 +15,6 @@ trait Neo4jDataStore extends DataStore {
 
   override def find(uuid: UUID): Future[Option[Fact]] = ???
 
-  override def find(fact: Fact): Future[Option[UUID]] = ???
-
   /*
     Using the MERGE feature of Neo4j greatly reduces the complexity of the upsert functionality required in the spec.
     Merge automatically looks for existing Nodes and uses them, or creates the Node if it does not exist.
