@@ -4,6 +4,7 @@ import java.util.UUID
 
 import akka.http.scaladsl.model.StatusCodes
 import akka.http.scaladsl.testkit.ScalatestRouteTest
+import org.ciroque.animalia.Any
 import org.ciroque.animalia.models.{Fact, FactFailedResult, FactIdResult}
 import org.ciroque.animalia.services.FactService
 import org.scalatest.easymock.EasyMockSugar
@@ -40,7 +41,7 @@ class FactApiSpec
     describe("Fact assertion") {
       it("returns a new id for a new fact ") {
         val fact = Fact("subject", "relationship", "object")
-        val response = FactIdResult(UUID.randomUUID())
+        val response = FactIdResult(Any.uuid)
 
         expecting {
           mockFactService.upsert(fact).andReturn(Future(response))
@@ -82,7 +83,7 @@ class FactApiSpec
 
     describe("Fact Management") {
       it("returns the uuid of a deleted fact on success") {
-        val response = FactIdResult(UUID.randomUUID())
+        val response = FactIdResult(Any.uuid)
         expecting {
           mockFactService.delete(response.id).andReturn(Future(Some(response)))
         }
@@ -95,7 +96,7 @@ class FactApiSpec
       }
 
       it("returns 404 with no body for a non-existent fact") {
-        val response = FactIdResult(UUID.randomUUID())
+        val response = FactIdResult(Any.uuid)
         expecting {
           mockFactService.delete(response.id).andReturn(Future(None))
         }
@@ -123,7 +124,7 @@ class FactApiSpec
       }
 
       it("handles DELETE requests") {
-        Delete(s"$path/${UUID.randomUUID()}") ~> routes ~> check {
+        Delete(s"$path/${Any.uuid}") ~> routes ~> check {
           handled should equal(true)
         }
       }

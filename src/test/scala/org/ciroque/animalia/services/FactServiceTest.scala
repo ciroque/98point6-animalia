@@ -2,6 +2,7 @@ package org.ciroque.animalia.services
 
 import java.util.UUID
 
+import org.ciroque.animalia.Any
 import org.ciroque.animalia.models.{Fact, FactFailedResult, FactIdResult}
 import org.ciroque.animalia.persistence.InMemoryDataStore
 import org.scalatest.concurrent.ScalaFutures
@@ -65,10 +66,10 @@ class FactServiceTest
     }
 
     describe("getFact") {
-      val firstUUID = UUID.randomUUID()
+      val firstUUID = Any.uuid
       val firstFact = Fact("subject1", "has", "object1")
 
-      val secondUUID = UUID.randomUUID()
+      val secondUUID = Any.uuid
       val secondFact = Fact("subject2", "has", "object2")
 
       val data = Map[UUID, Fact](
@@ -93,7 +94,7 @@ class FactServiceTest
       }
 
       it("does not find a fact by id") {
-        val uuid = UUID.randomUUID()
+        val uuid = Any.uuid
         whenReady(service.find(uuid)) {
           foundFact: Option[Fact] =>
             foundFact shouldBe None
@@ -102,10 +103,10 @@ class FactServiceTest
     }
 
     describe("deleteFact") {
-      val firstUUID = UUID.randomUUID()
+      val firstUUID = Any.uuid
       val firstFact = Fact("subject1", "has", "object1")
 
-      val secondUUID = UUID.randomUUID()
+      val secondUUID = Any.uuid
       val secondFact = Fact("subject2", "has", "object2")
 
       val data = Map[UUID, Fact](
@@ -130,7 +131,7 @@ class FactServiceTest
       }
 
       it("returns None when the given id is not found") {
-        whenReady(service.delete(UUID.randomUUID())) {
+        whenReady(service.delete(Any.uuid)) {
           factIdResult: Option[FactIdResult] =>
             factIdResult shouldBe None
         }

@@ -13,7 +13,18 @@ import scala.concurrent.ExecutionContext.Implicits.global
 trait Neo4jDataStore extends DataStore {
   implicit val neo4jDriver: Driver
 
-  override def find(uuid: UUID): Future[Option[Fact]] = ???
+  override def find(uuid: UUID): Future[Option[Fact]] = {
+    val result = withSession {
+      s"MATCH (s: Subject)-[r { uuid: '${uuid.toString}' }]-(o: Object) RETURN s.name as subject, type(r) as relationship, o.name as object;"
+    }
+
+    if(result.hasNext) {
+      val record = result.next()
+      Future(Some(Fact(record.get("subject").asString(), record.get("relationship").asString(), record.get("object").asString())))
+    } else {
+      Future(None)
+    }
+  }
 
   /*
     Using the MERGE feature of Neo4j greatly reduces the complexity of the upsert functionality required in the spec.
@@ -21,6 +32,8 @@ trait Neo4jDataStore extends DataStore {
     The ON CREATE clause allows us to specify what happens when the Relationship is created.
     In this case we provide a UUID, which will then be returned after the Relationship is created.
     In the case that the Relationship has already been created the existing uuid property is returned.
+
+    http://graphaware.com/neo4j/2014/07/31/cypher-merge-explained.html
    */
   override def store(fact: Fact): Future[UUID] = {
     val result = withSession {

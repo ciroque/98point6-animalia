@@ -1,10 +1,10 @@
 package org.ciroque.animalia.persistence
 import java.util.UUID
 
-import org.ciroque.animalia.models.{Fact, FactIdResult}
+import org.ciroque.animalia.models.Fact
 
-import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 trait InMemoryDataStore extends DataStore {
   implicit var facts: Map[UUID, Fact] = Map()
