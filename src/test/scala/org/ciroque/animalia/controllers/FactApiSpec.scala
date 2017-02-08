@@ -58,17 +58,17 @@ class FactApiSpec
           }
         }
       }
-    }
 
-    it("returns a 500 error when the service throws") {
-      val fact = Fact("subject", "relationship", "object")
-      expecting {
-        mockFactService.upsert(fact).andThrow(new IllegalArgumentException("TESTING 1-2-3"))
-      }
-      whenExecuting(mockFactService) {
-        Post(path, fact) ~> routes ~> check {
-          status should equal(StatusCodes.InternalServerError)
-          responseAs[String] should include("There was an internal server error.")
+      it("returns a 500 error when the service throws") {
+        val fact = Fact("subject", "relationship", "object")
+        expecting {
+          mockFactService.upsert(fact).andThrow(new IllegalArgumentException("TESTING 1-2-3"))
+        }
+        whenExecuting(mockFactService) {
+          Post(path, fact) ~> routes ~> check {
+            status should equal(StatusCodes.InternalServerError)
+            responseAs[String] should include("There was an internal server error.")
+          }
         }
       }
     }
