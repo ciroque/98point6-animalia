@@ -41,4 +41,6 @@ trait InMemoryDataStore extends DataStore {
       facts.find { case (uuid: UUID, f: Fact) => f.subject == fact.subject && f.rel == fact.rel && f.`object` == fact.`object` }.map(f => f._1)
     }
   }
+
+  override def query(fact: UUID) = ???
 }

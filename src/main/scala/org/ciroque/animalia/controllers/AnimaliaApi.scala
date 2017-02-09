@@ -3,8 +3,7 @@ package org.ciroque.animalia.controllers
 import akka.http.scaladsl.model.{ContentTypes, HttpEntity}
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
-import org.ciroque.animalia.data.Neo4jDataStore
-import org.ciroque.animalia.persistence.DataStore
+import org.ciroque.animalia.persistence.{DataStore, Neo4jDataStore}
 import org.ciroque.animalia.services.FactService
 
 class AnimaliaApi {

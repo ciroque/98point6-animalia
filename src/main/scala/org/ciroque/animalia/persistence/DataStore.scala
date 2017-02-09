@@ -13,9 +13,11 @@ import scala.concurrent.Future
   This allows easy mocking in tests and the ability to create and migrate to / from various backend databases.
  */
 trait DataStore {
+  def delete(uuid: UUID): Future[Option[UUID]]
+
   def find(uuid: UUID): Future[Option[Fact]]
 
-  def store(fact: Fact): Future[UUID]
+  def query(fact: UUID): Future[List[String]]
 
-  def delete(uuid: UUID): Future[Option[UUID]]
+  def store(fact: Fact): Future[UUID]
 }

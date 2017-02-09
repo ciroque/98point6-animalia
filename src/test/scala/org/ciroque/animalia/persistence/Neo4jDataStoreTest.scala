@@ -1,23 +1,32 @@
-package org.ciroque.animalia.data
+package org.ciroque.animalia.persistence
 
 import java.util.UUID
 
-import org.ciroque.animalia.Any
 import org.ciroque.animalia.models.Fact
+import org.ciroque.animalia.{Any, TrainingDataFormatter}
 import org.scalatest.concurrent._
-import org.scalatest.{BeforeAndAfterEach, FunSpec, Matchers}
+import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach, FunSpec, Matchers}
 
 class Neo4jDataStoreTest
   extends FunSpec
     with BeforeAndAfterEach
+    with BeforeAndAfterAll
     with Matchers
     with ScalaFutures {
 
   var dataStore: Neo4jDataStore = _
 
-  override def beforeEach() {
-    super.beforeEach()
+  override def afterAll(): Unit = {
+    super.afterAll()
+
+    // TODO: Empty database
+  }
+
+  override def beforeAll(): Unit = {
+    super.beforeAll()
     dataStore = Neo4jDataStore("bolt://localhost:7687", "animalia", "Password23")
+    TrainingDataFormatter.convertAnimaliaCsvToFactList()
+      .map(dataStore.store)
   }
 
   describe("Neo4jDataStoreTest") {

@@ -1,9 +1,8 @@
-package org.ciroque.animalia.data
+package org.ciroque.animalia.persistence
 
 import java.util.UUID
 
 import org.ciroque.animalia.models.Fact
-import org.ciroque.animalia.persistence.DataStore
 import org.neo4j.driver.v1._
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -12,9 +11,21 @@ import scala.concurrent.Future
 trait Neo4jDataStore extends DataStore {
   implicit val neo4jDriver: Driver
 
+  override def delete(uuid: UUID): Future[Option[UUID]] = {
+    val result = withSession {
+      s"MATCH ()-[r { uuid: '${uuid.toString}' }]-() DELETE r;"
+    }
+
+    if (result.summary().counters().relationshipsDeleted() == 1) {
+      Future(Some(uuid))
+    } else {
+      Future(None)
+    }
+  }
+
   override def find(uuid: UUID): Future[Option[Fact]] = {
     val result = withSession {
-      s"MATCH (s: Subject)-[r { uuid: '${uuid.toString}' }]-(o: Object) RETURN s.name as subject, type(r) as relationship, o.name as object;"
+      s"MATCH (s: Subject)-[r { uuid: '${uuid.toString}' }]-(o: Subject) RETURN s.name as subject, type(r) as relationship, o.name as object;"
     }
 
     if (result.hasNext) {
@@ -23,6 +34,11 @@ trait Neo4jDataStore extends DataStore {
     } else {
       Future(None)
     }
+  }
+
+  override def query(fact: UUID): Future[List[String]] = {
+
+    Future(List())
   }
 
   /*
@@ -38,7 +54,7 @@ trait Neo4jDataStore extends DataStore {
     val result = withSession {
       val newUUID: UUID = UUID.randomUUID()
       s"""MERGE (s:Subject { name: "${fact.subject}" })
-         | MERGE (o:Object { name:"${fact.`object`}" })
+         | MERGE (o:Subject { name:"${fact.`object`}" })
          | MERGE (s)-[r:${fact.rel.toLowerCase()}]-(o)
          | ON CREATE SET r.uuid = "${newUUID.toString}"
          | RETURN r.uuid AS UUID;""".stripMargin
@@ -48,18 +64,6 @@ trait Neo4jDataStore extends DataStore {
     val uuid = UUID.fromString(single.get("UUID").asString())
 
     Future(uuid)
-  }
-
-  override def delete(uuid: UUID): Future[Option[UUID]] = {
-    val result = withSession {
-      s"MATCH ()-[r { uuid: '${uuid.toString}' }]-() DELETE r;"
-    }
-
-    if (result.summary().counters().relationshipsDeleted() == 1) {
-      Future(Some(uuid))
-    } else {
-      Future(None)
-    }
   }
 
   /*

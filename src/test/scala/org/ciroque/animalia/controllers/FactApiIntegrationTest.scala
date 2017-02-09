@@ -3,8 +3,7 @@ package org.ciroque.animalia.controllers
 import akka.http.scaladsl.model.StatusCodes
 import akka.http.scaladsl.testkit.ScalatestRouteTest
 import org.ciroque.animalia.TrainingDataFormatter
-import org.ciroque.animalia.data.Neo4jDataStore
-import org.ciroque.animalia.persistence.DataStore
+import org.ciroque.animalia.persistence.{DataStore, Neo4jDataStore}
 import org.ciroque.animalia.services.FactService
 import org.scalatest.{FunSpec, Matchers}
 
