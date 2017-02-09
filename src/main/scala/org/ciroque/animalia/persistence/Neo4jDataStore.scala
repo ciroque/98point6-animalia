@@ -52,7 +52,7 @@ trait Neo4jDataStore extends DataStore {
         MATCH (object { name: '${fact.`object`}' })
         MATCH (subject)<-[:isa]->(animal)<-[r:${fact.rel}]->(object)
         MATCH (animal)<-[:isa]->({ name: 'animal' })
-        RETURN animal.name as animals
+        RETURN DISTINCT animal.name as animals
         ORDER BY animals
 
         UNION
@@ -64,7 +64,7 @@ trait Neo4jDataStore extends DataStore {
         MATCH (subject)-[:isa]-(animal)-[:${fact.rel}]->(thing)
         RETURN DISTINCT animal.name as animals
         ORDER BY animals
-          ;"""
+      ;"""
     }
 
     Future {
@@ -74,6 +74,40 @@ trait Neo4jDataStore extends DataStore {
         .map { case r: Record => r.get("animals").asString() }
         .toList
     }
+  }
+
+  override def queryCount(fact: Fact): Future[Int] = {
+    val result = withSession {
+      s"""
+        MATCH (subject: Fact { name: '${fact.subject}'})<-[:${fact.rel}]->(object: Fact { name: '${fact.`object`}'})
+        RETURN COUNT(DISTINCT subject.name) as count
+
+        UNION
+
+        MATCH (subject { name: '${fact.subject}' })
+        MATCH (object { name: '${fact.`object`}' })
+        MATCH (subject)<-[:isa]->(animal)<-[r:${fact.rel}]->(object)
+        MATCH (animal)<-[:isa]->({ name: 'animal' })
+        RETURN COUNT(DISTINCT animal.name) as count
+
+        UNION
+
+        MATCH ()<-[:has]->(animal: Fact)-[:isa]->({name: 'animal'})
+        MATCH (subject: Fact { name: '${fact.subject}'})
+        MATCH (object: Fact { name: '${fact.`object`}'})
+        MATCH (thing)-[:isa]->(object)
+        MATCH (subject)-[:isa]-(animal)-[:${fact.rel}]->(thing)
+        RETURN COUNT(DISTINCT animal.name) as count
+      ;"""
+    }
+
+    val count = result
+      .list()
+      .toArray()
+      .map { case r: Record => r.get("count").asInt() }
+      .sum
+
+    Future(count)
   }
 
   /*

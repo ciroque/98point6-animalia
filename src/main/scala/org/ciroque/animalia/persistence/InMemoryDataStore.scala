@@ -43,4 +43,6 @@ trait InMemoryDataStore extends DataStore {
   }
 
   override def query(fact: Fact) = ???
+
+  override def queryCount(fact: Fact): Future[Int] = Future(0)
 }

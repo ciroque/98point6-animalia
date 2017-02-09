@@ -19,5 +19,7 @@ trait DataStore {
 
   def query(fact: Fact): Future[List[String]]
 
+  def queryCount(fact: Fact): Future[Int]
+
   def store(fact: Fact): Future[UUID]
 }

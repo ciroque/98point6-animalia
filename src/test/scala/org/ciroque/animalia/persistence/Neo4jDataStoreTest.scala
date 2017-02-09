@@ -193,24 +193,55 @@ class Neo4jDataStoreTest
           }
         }
       }
-      describe("which") {
+      describe("how many") {
         it("how many animals have legs") {
-
+          val query = Fact("animal", "has", "leg")
+          whenReady(dataStore.queryCount(query)) {
+            count: Int =>
+              count shouldBe 9
+          }
         }
         it("how many animals have fins") {
-
+          val query = Fact("animal", "has", "fin")
+          whenReady(dataStore.queryCount(query)) {
+            count: Int =>
+              count shouldBe 2
+          }
         }
         it("how many animals eat berries") {
-
+          val query = Fact("animal", "eats", "berries")
+          whenReady(dataStore.queryCount(query)) {
+            count: Int =>
+              count shouldBe 3
+          }
         }
         it("how many animals eat mammals") {
-
+          val query = Fact("animal", "eats", "mammal")
+          whenReady(dataStore.queryCount(query)) {
+            count: Int =>
+              count shouldBe 1
+          }
         }
         it("how many bears have scales") {
-
+          val query = Fact("bear", "has", "scale")
+          whenReady(dataStore.queryCount(query)) {
+            count: Int =>
+              count shouldBe 0
+          }
+        }
+        it("how many fish have scale") {
+          val query = Fact("fish", "has", "scale")
+          whenReady(dataStore.queryCount(query)) {
+            count: Int =>
+              count shouldBe 0
+          }
         }
         it("how many mammals live in the ocean") {
-
+          val query = Fact("mammal", "lives", "ocean")
+          whenReady(dataStore.queryCount(query)) {
+            count: Int =>
+              count shouldBe 1
+          }
         }
       }
     }

@@ -1,5 +1,7 @@
 # Neo4j Cypher notes
 
+**WARN: These are notes. A scratch pad of ideas and discovery. The actual code may vary greatly.**
+
 ## MERGE
 
 http://graphaware.com/neo4j/2014/07/31/cypher-merge-explained.html
@@ -82,11 +84,12 @@ MATCH (subject { name: 'bear'})<-[:has]->(object { name: 'leg'}) RETURN DISTINCT
 #### Indirect 1
 -- which animals have legs
 -- which animals eat berries
-MATCH ()<-[:has]->(animal)-[:isa]->({name: 'animal'})
-MATCH (subject { name: '.'})
-MATCH (subject)-[:.]-(animal)
-RETURN DISTINCT animal.name as animals
-;
+MATCH (subject { name: '.' })
+MATCH (object { name: '.' })
+MATCH (subject)<-[:isa]->(animal)<-[r:.]->(object)
+MATCH (animal)<-[:isa]->({ name: 'animal' })
+RETURN animal.name as animals
+ORDER BY animals
 
 #### Indirect 2
 -- which animals eat mammals
@@ -103,22 +106,34 @@ RETURN DISTINCT animal.name as animals
 
 #### And the unholy mess that is the Union between the three queries
 
-MATCH (subject { name: 's1'})<-[:r1]->(object { name: 'o1'}) RETURN DISTINCT subject.name as animals
-UNION 
-MATCH ()<-[:has]->(animal)-[:isa]->({name: 'animal'})
-MATCH (subject { name: 'o1'})
-MATCH (subject)-[:r1]-(animal)
-RETURN DISTINCT animal.name as animals
-UNION 
-MATCH ()<-[:has]->(animal)-[:isa]->({name: 'animal'})
-MATCH (subject { name: 's1'})
-MATCH (object { name: 'o1'})
+MATCH (subject: Fact { name: 'mammal'})<-[:lives]->(object: Fact { name: 'ocean'})
+RETURN DISTINCT subject.name as animals
+ORDER BY animals
+
+UNION
+
+MATCH (subject { name: 'mammal' })
+MATCH (object { name: 'ocean' })
+MATCH (subject)<-[:isa]->(animal)<-[r:lives]->(object)
+MATCH (animal)<-[:isa]->({ name: 'animal' })
+RETURN animal.name as animals
+ORDER BY animals
+
+UNION
+
+MATCH ()<-[:has]->(animal: Fact)-[:isa]->({name: 'animal'})
+MATCH (subject: Fact { name: 'mammal'})
+MATCH (object: Fact { name: 'ocean'})
 MATCH (thing)-[:isa]->(object)
-MATCH (subject)-[:isa]-(animal)-[:r1]->(thing)
+MATCH (subject)-[:isa]-(animal)-[:lives]->(thing)
 RETURN DISTINCT animal.name as animals
+ORDER BY animals
 ;
 
 ### Generic
+
+**Never got this fully fleshed out**
+
 (SUBJECT {?})<-[?]->(TARGET)-[RELATIONSHIP]->()<-[?]->(OBJECT {?}) 
 RETURN target;
 
