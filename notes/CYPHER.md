@@ -35,3 +35,101 @@ http://graphaware.com/neo4j/2014/07/31/cypher-merge-explained.html
  ON CREATE SET r.uuid = "c81e9f78-219d-42f1-9538-17df409d788e"
  RETURN r.uuid
  ;
+ 
+## QUERIES
+
+ {
+    Subject,
+    Relationship,
+    Object
+ }
+ 
+### Which / How many animals have legs?
+ MATCH (subject { name: 'animal'})-[:isa]-(target)-[relationship:has]-(o { name:'leg' }) RETURN DISTINCT target.name as animals;
+ MATCH (subject { name: 'animal'})-[:isa]-(target)-[relationship:has]-(o { name:'leg' }) RETURN DISTINCT COUNT(target.name) as count;
+ 
+### How many animals have fins?
+ MATCH (subject { name: 'animal'})<-[:isa]->(target)-[relationship:has]->(object { name:'fin' }) RETURN DISTINCT target.name as animals;
+
+### Which animals eat berries?
+ MATCH (subject { name: 'animal'})<-[:isa]-(target)-[relationship:eats]-(object { name: 'berries' }) RETURN DISTINCT target.name as animals;
+ 
+### Which animals eat mammals?
+ MATCH (subject { name: 'animal' })<-[:isa]-(target)-[relationship:eats]->(food)<-[:isa]->(object { name: 'mammal'}) return DISTINCT target.name as animals ORDER BY animals;
+ 
+### Which bears have scales?
+ MATCH (subject { name: 'bear'})<-[relationship:has]->(object { name: 'scale' }) RETURN DISTINCT result.name as animals;
+ 
+### How many mammals live in the ocean?
+ MATCH (subject { name: 'mammal' })<-[:isa]-(target)<-[relationship:lives]->(object { name: 'ocean' }) RETURN DISTINCT target.name as animals;
+
+MATCH (subject { name: '<subject>'})-[relationship: <relationship>]-(object { name: '<object>'})
+RETURN DISTINCT subject.name
+;
+
+MATCH (subject { name: 'bear'})<-[relationship:has]->(object { name: 'scale' }) RETURN DISTINCT result.name as animals;
+MATCH (subject { name: 'animal' })<-[:isa]-(target)-[relationship:eats]->(food)<-[:isa]->(object { name: 'mammal'}) return DISTINCT target.name as animals ORDER BY animals;
+
+
+### Brute force
+
+#### Direct
+-- which animals live in the ocean
+-- which bears have scales
+MATCH (subject { name: 'bear'})<-[:has]->(object { name: 'leg'}) RETURN DISTINCT subject.name as animals;
+
+
+#### Indirect 1
+-- which animals have legs
+-- which animals eat berries
+MATCH ()<-[:has]->(animal)-[:isa]->({name: 'animal'})
+MATCH (subject { name: '.'})
+MATCH (subject)-[:.]-(animal)
+RETURN DISTINCT animal.name as animals
+;
+
+#### Indirect 2
+-- which animals eat mammals
+-- which fish eat arachnids
+
+MATCH ()<-[:has]->(animal)-[:isa]->({name: 'animal'})
+MATCH (subject { name: '.'})
+MATCH (object { name: '.'})
+MATCH (thing)-[:isa]->(object)
+MATCH (subject)-[:isa]-(animal)-[:.]->(thing)
+RETURN DISTINCT animal.name as animals
+;
+
+
+#### And the unholy mess that is the Union between the three queries
+
+MATCH (subject { name: 's1'})<-[:r1]->(object { name: 'o1'}) RETURN DISTINCT subject.name as animals
+UNION 
+MATCH ()<-[:has]->(animal)-[:isa]->({name: 'animal'})
+MATCH (subject { name: 'o1'})
+MATCH (subject)-[:r1]-(animal)
+RETURN DISTINCT animal.name as animals
+UNION 
+MATCH ()<-[:has]->(animal)-[:isa]->({name: 'animal'})
+MATCH (subject { name: 's1'})
+MATCH (object { name: 'o1'})
+MATCH (thing)-[:isa]->(object)
+MATCH (subject)-[:isa]-(animal)-[:r1]->(thing)
+RETURN DISTINCT animal.name as animals
+;
+
+### Generic
+(SUBJECT {?})<-[?]->(TARGET)-[RELATIONSHIP]->()<-[?]->(OBJECT {?}) RETURN target;
+
+MATCH ()<-[:has]->(animal)-[:isa]->({name: 'animal'})
+RETURN DISTINCT animal.name as animals
+;
+
+MATCH (subject { name: '<subject>'})
+RETURN DISTINCT subject.name
+;
+
+MATCH (object { name: '<object>'})
+RETURN DISTINCT object.name
+;
+
