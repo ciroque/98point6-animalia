@@ -25,8 +25,9 @@ class Neo4jDataStoreTest
   override def beforeAll(): Unit = {
     super.beforeAll()
     dataStore = Neo4jDataStore("bolt://localhost:7687", "animalia", "Password23")
-    TrainingDataFormatter.convertAnimaliaCsvToFactList()
-      .map(dataStore.store)
+//    TrainingDataFormatter.convertAnimaliaCsvToFactList().map(dataStore.store)
+    import spray.json._
+    TrainingDataFormatter.convertAnimaliaCsvToFactList().foreach(j => println(j.toJson.toString()))
   }
 
   describe("Neo4jDataStoreTest") {

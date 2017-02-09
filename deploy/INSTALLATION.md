@@ -26,4 +26,8 @@ Decide where to host. Preference is to an EC2 instance running Ubuntu 16.04 serv
 
 ## Service Deployment
 
-
+1) Use the ```deploy/build_and_deploy.sh``` script to build the native Ubuntu package and copy it to the EC2 instance.
+2) ssh to host: ```ssh -i <your-key-file> ubuntu@<public-ip>```
+3) switch to tmp directory: ```cd /tmp```
+4) Install the package: ```sudo dpkg -i Animalia_1.0_all.deb``` 
+5) Start the service: ```CLASSPATH=/usr/share/animalia/lib/* java org.ciroque.animalia.Main &``` // TODO: Make this a systemd
