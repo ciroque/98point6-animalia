@@ -53,9 +53,9 @@ class QueryApiSpec
       }
 
       it("returns the correct JSON when animals are found - big string") {
-        var query = Fact(Any.alphanumericString(100), "isa", Any.alphanumericString(100))
-        var animals = List(Any.string(), Any.alphanumericString(), Any.string())
-        var expected = animals.toJson.toString()
+        val query = Fact(Any.alphanumericString(100), "isa", Any.alphanumericString(100))
+        val animals = List(Any.string(), Any.alphanumericString(), Any.string())
+        val expected = animals.toJson.toString()
         expecting {
           mockQueryService.query(query).andReturn(Future(animals))
         }
@@ -69,7 +69,7 @@ class QueryApiSpec
       }
 
       it("returns a 404 when no animals are found") {
-        var query = Fact(Any.alphanumericString(100), "isa", Any.alphanumericString(100))
+        val query = Fact(Any.alphanumericString(100), "isa", Any.alphanumericString(100))
         expecting {
           mockQueryService.query(query).andReturn(Future(List()))
         }
@@ -116,8 +116,58 @@ class QueryApiSpec
       val path = "/animals/how-many"
 
       it("handles GET requests") {
-        Get(path) ~> routes ~> check {
-          status shouldBe StatusCodes.NotImplemented
+        pending
+        Get(s"""$path?s="things"&r='rel'&o='obje'""") ~> routes ~> check {
+          status shouldBe StatusCodes.BadRequest
+        }
+      }
+
+      it("returns the correct JSON when animals are found") {
+        val query = Fact(Any.alphanumericString(), "isa", Any.alphanumericString())
+        val expected = 9806
+        expecting {
+          mockQueryService.queryCount(query).andReturn(Future(expected))
+        }
+        whenExecuting(mockQueryService) {
+          Get(s"""$path?s="${query.subject}"&r='${query.rel}'&o='${query.`object`}'""") ~> routes ~> check {
+            status shouldBe StatusCodes.OK
+            responseAs[String] shouldBe expected.toString
+          }
+        }
+      }
+
+      it("returns the correct JSON when animals are found - big string") {
+        val query = Fact(Any.alphanumericString(100), "isa", Any.alphanumericString(100))
+        val expected = 27
+        expecting {
+          mockQueryService.queryCount(query).andReturn(Future(expected))
+        }
+        whenExecuting(mockQueryService) {
+          Get(s"""$path?s="${query.subject}"&r='${query.rel}'&o='${query.`object`}'""") ~> routes ~> check {
+            status shouldBe StatusCodes.OK
+            val json = responseAs[String] shouldBe expected.toString
+          }
+        }
+      }
+
+      it("returns a 404 when no animals are found") {
+        val query = Fact(Any.alphanumericString(100), "isa", Any.alphanumericString(100))
+        expecting {
+          mockQueryService.queryCount(query).andReturn(Future(0))
+        }
+        whenExecuting(mockQueryService) {
+          Get(s"""$path?s="${query.subject}"&r='${query.rel}'&o='${query.`object`}'""") ~> routes ~> check {
+            status shouldBe StatusCodes.NotFound
+            responseAs[String] should include("I can't answer your query.")
+          }
+        }
+      }
+
+      it("returns a 400 when the request is malformed") {
+        pending
+        Get(s"""$path?s="BAD"&r='REQUEST'""") ~> Route.seal(routes) ~> check {
+          status shouldBe StatusCodes.BadRequest
+          responseAs[String] should include("I can't answer your query.")
         }
       }
 

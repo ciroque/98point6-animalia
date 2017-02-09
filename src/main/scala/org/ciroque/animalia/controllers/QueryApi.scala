@@ -1,5 +1,6 @@
 package org.ciroque.animalia.controllers
 
+import java.util.UUID
 import java.util.concurrent.TimeUnit
 
 import akka.http.scaladsl.model.{HttpEntity, HttpResponse, MediaTypes, StatusCodes}
@@ -11,7 +12,7 @@ import org.ciroque.animalia.services.QueryService
 import spray.json.DefaultJsonProtocol._
 import spray.json._
 
-import scala.util.Success
+import scala.util.{Failure, Success}
 
 trait QueryApi {
   implicit val timeout: Timeout = Timeout(3, TimeUnit.SECONDS)
@@ -38,19 +39,37 @@ trait QueryApi {
                   case _ => complete(formatAnimalListResponse(animals))
                 }
             }
-//          case _ => complete(formatBadRequestResponse())
+          //          case _ => complete(formatBadRequestResponse())
         }
       }
     }
 
   private val howManyGetRoute =
-    path(rootSegment / howManySegment) {
-      get {
-        complete(StatusCodes.NotImplemented, "Check back later...")
+    get {
+      path(rootSegment / howManySegment) {
+        parameters('s, 'r, 'o) {
+          (s, r, o) =>
+            val query = Fact(cleanString(s), cleanString(r), cleanString(o))
+            onComplete(queryService.queryCount(query)) {
+              case Success(count: Int) =>
+                count match {
+                  case 0 => complete(formatNotFoundResponse())
+                  case _ => complete(formatAnimalCountResponse(count))
+                }
+              case Failure(t) =>
+                val correlationId = UUID.randomUUID().toString
+                complete(formatInternalServerErrorResponse(correlationId))
+            }
+          //          case _ => complete(formatBadRequestResponse())
+        }
       }
     }
 
   val routes: Route = whichGetRoute ~ howManyGetRoute
+
+  private def formatAnimalCountResponse(count: Int): HttpResponse = {
+    HttpResponse(StatusCodes.OK, Common.corsHeaders, HttpEntity(MediaTypes.`application/json`, count.toString))
+  }
 
   private def formatAnimalListResponse(animals: List[String]): HttpResponse = {
     HttpResponse(StatusCodes.OK, Common.corsHeaders, HttpEntity(MediaTypes.`application/json`, animals.toJson.toString()))
@@ -62,5 +81,9 @@ trait QueryApi {
 
   private def formatBadRequestResponse(): HttpResponse = {
     HttpResponse(StatusCodes.BadRequest, Common.corsHeaders, HttpEntity(MediaTypes.`application/json`, ""))
+  }
+
+  private def formatInternalServerErrorResponse(correlationId: String) = {
+    HttpResponse(StatusCodes.InternalServerError, Common.corsHeaders, HttpEntity(MediaTypes.`application/json`, s"an internal error occurred. please reference '$correlationId' when contacting support"))
   }
 }

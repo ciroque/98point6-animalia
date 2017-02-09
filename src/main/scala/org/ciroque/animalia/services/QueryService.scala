@@ -16,6 +16,7 @@ trait QueryService {
   }
 
   def queryCount(query: Fact): Future[Int] = {
+    println(s"QueryService::queryCount($query)")
     dataStore.queryCount(query)
   }
 }

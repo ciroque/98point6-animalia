@@ -77,6 +77,7 @@ trait Neo4jDataStore extends DataStore {
   }
 
   override def queryCount(fact: Fact): Future[Int] = {
+    println(s"Neo4jDataStore::queryCount($fact)")
     val result = withSession {
       s"""
         MATCH (subject: Fact { name: '${fact.subject}'})<-[:${fact.rel}]->(object: Fact { name: '${fact.`object`}'})
