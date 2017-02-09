@@ -28,7 +28,7 @@ class FactApiSpec
     with EasyMockSugar
     with BeforeAndAfterEach {
 
-  val mockFactService = mock[FactService]
+  val mockFactService: FactService = mock[FactService]
   implicit val factService: FactService = mockFactService
 
   override def beforeEach() = {

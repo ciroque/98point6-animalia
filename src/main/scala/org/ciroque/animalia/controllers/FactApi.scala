@@ -3,7 +3,6 @@ package org.ciroque.animalia.controllers
 import java.util.UUID
 import java.util.concurrent.TimeUnit
 
-import akka.http.scaladsl.model.headers.RawHeader
 import akka.http.scaladsl.model.{HttpEntity, HttpResponse, MediaTypes, StatusCodes}
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.{ExceptionHandler, Route}
@@ -20,12 +19,6 @@ trait FactApi {
 
   private val rootSegment = "animals"
   private val factSegment = "facts"
-
-  val corsHeaders = List(
-    RawHeader("Access-Control-Allow-Origin", "*"),
-    RawHeader("Access-Control-Allow-Headers", "Content-Type"),
-    RawHeader("Access-Control-Allow-Methods", "GET,POST,DELETE")
-  )
 
   private val handlePostException = ExceptionHandler {
     case t: Throwable =>
@@ -86,20 +79,20 @@ trait FactApi {
   private def formatOkResponse(json: JsValue): HttpResponse = {
     HttpResponse(
       StatusCodes.OK,
-      corsHeaders,
+      Common.corsHeaders,
       HttpEntity(MediaTypes.`application/json`, json.toString())
     )
   }
 
   private def formatBadRequestResponse(factFailedResult: FactFailedResult): HttpResponse = {
-    HttpResponse(StatusCodes.BadRequest, corsHeaders, HttpEntity(MediaTypes.`application/json`, factFailedResult.toJson.toString()))
+    HttpResponse(StatusCodes.BadRequest, Common.corsHeaders, HttpEntity(MediaTypes.`application/json`, factFailedResult.toJson.toString()))
   }
 
   private def formatNotFoundResponse(): HttpResponse = {
-    HttpResponse(StatusCodes.NotFound, corsHeaders, HttpEntity(MediaTypes.`application/json`, ""))
+    HttpResponse(StatusCodes.NotFound, Common.corsHeaders, HttpEntity(MediaTypes.`application/json`, ""))
   }
 
   private def formatInternalServerErrorResponse(correlationId: String) = {
-    HttpResponse(StatusCodes.InternalServerError, corsHeaders, HttpEntity(MediaTypes.`application/json`, s"an internal error occurred. please reference '$correlationId' when contacting support"))
+    HttpResponse(StatusCodes.InternalServerError, Common.corsHeaders, HttpEntity(MediaTypes.`application/json`, s"an internal error occurred. please reference '$correlationId' when contacting support"))
   }
 }
