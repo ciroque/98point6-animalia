@@ -113,13 +113,6 @@ class QueryApiSpec
     describe("how-many") {
       val path = "/animals/how-many"
 
-      it("handles GET requests") {
-        pending
-        Get(s"""$path?s="things"&r='rel'&o='obje'""") ~> routes ~> check {
-          status shouldBe StatusCodes.BadRequest
-        }
-      }
-
       it("returns the correct JSON when animals are found") {
         val query = Fact(Any.alphanumericString(), "isa", Any.alphanumericString())
         val expected = 9806
@@ -143,7 +136,7 @@ class QueryApiSpec
         whenExecuting(mockQueryService) {
           Get(s"""$path?s="${query.subject}"&r='${query.rel}'&o='${query.`object`}'""") ~> routes ~> check {
             status shouldBe StatusCodes.OK
-            val json = responseAs[String] shouldBe expected.toString
+            responseAs[String] shouldBe expected.toString
           }
         }
       }
@@ -163,6 +156,13 @@ class QueryApiSpec
 
       it("returns a 400 when the request is malformed") {
         Get(s"""$path?s="BAD"&r='REQUEST'""") ~> Route.seal(routes) ~> check {
+          status shouldBe StatusCodes.BadRequest
+          responseAs[String] should include("missing parameter")
+        }
+      }
+
+      it("returns a 400 when the request is malformed with odd quotes") {
+        Get(s"""$path?s="BAD&r='"REQUEST'""") ~> Route.seal(routes) ~> check {
           status shouldBe StatusCodes.BadRequest
           responseAs[String] should include("missing parameter")
         }
