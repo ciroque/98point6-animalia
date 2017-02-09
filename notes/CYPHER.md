@@ -119,7 +119,8 @@ RETURN DISTINCT animal.name as animals
 ;
 
 ### Generic
-(SUBJECT {?})<-[?]->(TARGET)-[RELATIONSHIP]->()<-[?]->(OBJECT {?}) RETURN target;
+(SUBJECT {?})<-[?]->(TARGET)-[RELATIONSHIP]->()<-[?]->(OBJECT {?}) 
+RETURN target;
 
 MATCH ()<-[:has]->(animal)-[:isa]->({name: 'animal'})
 RETURN DISTINCT animal.name as animals

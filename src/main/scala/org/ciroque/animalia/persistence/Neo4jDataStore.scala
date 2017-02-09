@@ -25,7 +25,7 @@ trait Neo4jDataStore extends DataStore {
 
   override def find(uuid: UUID): Future[Option[Fact]] = {
     val result = withSession {
-      s"MATCH (s: Subject)-[r { uuid: '${uuid.toString}' }]-(o: Subject) RETURN s.name as subject, type(r) as relationship, o.name as object;"
+      s"MATCH (s: Fact)-[r { uuid: '${uuid.toString}' }]-(o: Fact) RETURN s.name as subject, type(r) as relationship, o.name as object;"
     }
 
     if (result.hasNext) {
@@ -36,9 +36,44 @@ trait Neo4jDataStore extends DataStore {
     }
   }
 
-  override def query(fact: UUID): Future[List[String]] = {
+  /*
+      TODO: Read, Learn, Implement: https://neo4j.com/blog/cypher-union-query-using-collect-clause/
+   */
+  override def query(fact: Fact): Future[List[String]] = {
+    val result = withSession {
+      s"""
+        MATCH (subject: Fact { name: '${fact.subject}'})<-[:${fact.rel}]->(object: Fact { name: '${fact.`object`}'})
+        RETURN DISTINCT subject.name as animals
+        ORDER BY animals
 
-    Future(List())
+        UNION
+
+        MATCH (subject { name: '${fact.subject}' })
+        MATCH (object { name: '${fact.`object`}' })
+        MATCH (subject)<-[:isa]->(animal)<-[r:${fact.rel}]->(object)
+        MATCH (animal)<-[:isa]->({ name: 'animal' })
+        RETURN animal.name as animals
+        ORDER BY animals
+
+        UNION
+
+        MATCH ()<-[:has]->(animal: Fact)-[:isa]->({name: 'animal'})
+        MATCH (subject: Fact { name: '${fact.subject}'})
+        MATCH (object: Fact { name: '${fact.`object`}'})
+        MATCH (thing)-[:isa]->(object)
+        MATCH (subject)-[:isa]-(animal)-[:${fact.rel}]->(thing)
+        RETURN DISTINCT animal.name as animals
+        ORDER BY animals
+          ;"""
+    }
+
+    Future {
+      result
+        .list()
+        .toArray()
+        .map { case r: Record => r.get("animals").asString() }
+        .toList
+    }
   }
 
   /*
@@ -53,8 +88,8 @@ trait Neo4jDataStore extends DataStore {
   override def store(fact: Fact): Future[UUID] = {
     val result = withSession {
       val newUUID: UUID = UUID.randomUUID()
-      s"""MERGE (s:Subject { name: "${fact.subject}" })
-         | MERGE (o:Subject { name:"${fact.`object`}" })
+      s"""MERGE (s:Fact { name: "${fact.subject}" })
+         | MERGE (o:Fact { name:"${fact.`object`}" })
          | MERGE (s)-[r:${fact.rel.toLowerCase()}]-(o)
          | ON CREATE SET r.uuid = "${newUUID.toString}"
          | RETURN r.uuid AS UUID;""".stripMargin
@@ -72,6 +107,7 @@ trait Neo4jDataStore extends DataStore {
   private def withSession(statement: String): StatementResult = {
     val session = neo4jDriver.session()
     try {
+      println(statement)
       session.run(statement)
     } finally {
       session.close()

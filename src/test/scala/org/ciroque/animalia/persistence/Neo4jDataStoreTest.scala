@@ -134,5 +134,85 @@ class Neo4jDataStoreTest
         }
       }
     }
+
+    describe("query") {
+      describe("which") {
+        it("which animals have legs") {
+          val query = Fact("animal", "has", "leg")
+          whenReady(dataStore.query(query)) {
+            animals: List[String] =>
+              animals shouldBe List("bear", "cormorant", "coyote", "deer", "gecko", "heron", "otter", "skunk", "spider")
+          }
+        }
+        it("Which animals have fins") {
+          val query = Fact("animal", "has", "fin")
+          whenReady(dataStore.query(query)) {
+            animals: List[String] =>
+              println(animals)
+              animals shouldBe List("herring", "salmon")
+          }
+        }
+        it("Which animals eat berries") {
+          val query = Fact("animal", "eats", "berries")
+          whenReady(dataStore.query(query)) {
+            animals: List[String] =>
+              println(animals)
+              animals shouldBe List("bear", "deer", "skunk")
+          }
+        }
+        it("Which animals eat mammals") {
+          val query = Fact("animal", "eats", "mammal")
+          whenReady(dataStore.query(query)) {
+            animals: List[String] =>
+              println(animals)
+              animals shouldBe List("coyote")
+          }
+        }
+        it("Which bears have scales") {
+          val query = Fact("bear", "has", "scale")
+          whenReady(dataStore.query(query)) {
+            animals: List[String] =>
+              println(animals)
+              animals shouldBe List()
+          }
+        }
+        it("Which fish have scale") {
+          val query = Fact("fish", "has", "scale")
+          whenReady(dataStore.query(query)) {
+            animals: List[String] =>
+              println(animals)
+              animals shouldBe List()
+          }
+        }
+        it("Which mammals live in the ocean") {
+          val query = Fact("mammal", "lives", "ocean")
+          whenReady(dataStore.query(query)) {
+            animals: List[String] =>
+              println(animals)
+              animals shouldBe List("otter")
+          }
+        }
+      }
+      describe("which") {
+        it("how many animals have legs") {
+
+        }
+        it("how many animals have fins") {
+
+        }
+        it("how many animals eat berries") {
+
+        }
+        it("how many animals eat mammals") {
+
+        }
+        it("how many bears have scales") {
+
+        }
+        it("how many mammals live in the ocean") {
+
+        }
+      }
+    }
   }
 }

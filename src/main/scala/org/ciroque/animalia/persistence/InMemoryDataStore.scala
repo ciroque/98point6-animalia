@@ -42,5 +42,5 @@ trait InMemoryDataStore extends DataStore {
     }
   }
 
-  override def query(fact: UUID) = ???
+  override def query(fact: Fact) = ???
 }

@@ -17,7 +17,7 @@ trait DataStore {
 
   def find(uuid: UUID): Future[Option[Fact]]
 
-  def query(fact: UUID): Future[List[String]]
+  def query(fact: Fact): Future[List[String]]
 
   def store(fact: Fact): Future[UUID]
 }
