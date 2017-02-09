@@ -5,8 +5,6 @@ import org.ciroque.animalia.persistence.DataStore
 
 import scala.concurrent.Future
 
-import scala.concurrent.ExecutionContext.Implicits.global
-
 trait QueryService {
 
   implicit val dataStore: DataStore
@@ -16,7 +14,6 @@ trait QueryService {
   }
 
   def queryCount(query: Fact): Future[Int] = {
-    println(s"QueryService::queryCount($query)")
     dataStore.queryCount(query)
   }
 }

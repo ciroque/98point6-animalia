@@ -5,7 +5,7 @@ import java.util.UUID
 import akka.http.scaladsl.model.StatusCodes
 import akka.http.scaladsl.testkit.ScalatestRouteTest
 import org.ciroque.animalia.Any
-import org.ciroque.animalia.models.{Fact, FactFailedResult, FactIdResult}
+import org.ciroque.animalia.models.{Fact, FactIdResult, SimpleMessageResponse}
 import org.ciroque.animalia.services.FactService
 import org.easymock.EasyMock._
 import org.scalatest.easymock.EasyMockSugar
@@ -31,7 +31,7 @@ class FactApiSpec
   val mockFactService: FactService = mock[FactService]
   implicit val factService: FactService = mockFactService
 
-  override def beforeEach() = {
+  override def beforeEach(): Unit = {
     reset(mockFactService)
   }
 
@@ -57,12 +57,12 @@ class FactApiSpec
       it("returns a the appropriate message for an invalid entity") {
         val fact = Fact("subject", "relationship", "object")
         expecting {
-          mockFactService.upsert(fact).andReturn(Future.failed(FactFailedResult.DefaultErrorResult))
+          mockFactService.upsert(fact).andReturn(Future.failed(SimpleMessageResponse.DefaultErrorResponse))
         }
         whenExecuting(mockFactService) {
           Post(path, fact) ~> routes ~> check {
             status shouldBe StatusCodes.BadRequest
-            responseAs[FactFailedResult] shouldBe FactFailedResult.DefaultErrorResult
+            responseAs[SimpleMessageResponse] shouldBe SimpleMessageResponse.DefaultErrorResponse
           }
         }
       }

@@ -7,7 +7,7 @@ import akka.http.scaladsl.model.{HttpEntity, HttpResponse, MediaTypes, StatusCod
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.{ExceptionHandler, Route}
 import akka.util.Timeout
-import org.ciroque.animalia.models.{Fact, FactFailedResult, FactIdResult}
+import org.ciroque.animalia.models.{Fact, FactIdResult, SimpleMessageResponse}
 import org.ciroque.animalia.services.FactService
 import spray.json._
 
@@ -51,7 +51,7 @@ trait FactApi {
             fact: Fact =>
               onComplete(factService.upsert(fact)) {
                 case Success(factIdResult: FactIdResult) => complete(formatOkResponse(factIdResult.toJson))
-                case Failure(factFailedResult: FactFailedResult) => complete(formatBadRequestResponse(factFailedResult))
+                case Failure(factFailedResult: SimpleMessageResponse) => complete(formatBadRequestResponse(factFailedResult))
               }
           }
         }
@@ -84,7 +84,7 @@ trait FactApi {
     )
   }
 
-  private def formatBadRequestResponse(factFailedResult: FactFailedResult): HttpResponse = {
+  private def formatBadRequestResponse(factFailedResult: SimpleMessageResponse): HttpResponse = {
     HttpResponse(StatusCodes.BadRequest, Common.corsHeaders, HttpEntity(MediaTypes.`application/json`, factFailedResult.toJson.toString()))
   }
 

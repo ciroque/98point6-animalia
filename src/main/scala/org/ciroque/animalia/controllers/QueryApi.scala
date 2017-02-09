@@ -5,9 +5,9 @@ import java.util.concurrent.TimeUnit
 
 import akka.http.scaladsl.model.{HttpEntity, HttpResponse, MediaTypes, StatusCodes}
 import akka.http.scaladsl.server.Directives._
-import akka.http.scaladsl.server.Route
+import akka.http.scaladsl.server.{MissingQueryParamRejection, RejectionHandler, Route}
 import akka.util.Timeout
-import org.ciroque.animalia.models.{Fact, QueryApiNotFoundResponse}
+import org.ciroque.animalia.models.{Fact, QueryApiNotFoundResponse, SimpleMessageResponse}
 import org.ciroque.animalia.services.QueryService
 import spray.json.DefaultJsonProtocol._
 import spray.json._
@@ -65,6 +65,12 @@ trait QueryApi {
       }
     }
 
+  implicit val handleRejections: RejectionHandler = RejectionHandler.newBuilder()
+    .handle {
+      case MissingQueryParamRejection(parameterName) => complete(formatBadRequestResponse(s"""missing parameter "$parameterName""""))
+    }
+    .result()
+
   val routes: Route = whichGetRoute ~ howManyGetRoute
 
   private def formatAnimalCountResponse(count: Int): HttpResponse = {
@@ -79,8 +85,8 @@ trait QueryApi {
     HttpResponse(StatusCodes.NotFound, Common.corsHeaders, HttpEntity(MediaTypes.`application/json`, QueryApiNotFoundResponse().toJson.toString()))
   }
 
-  private def formatBadRequestResponse(): HttpResponse = {
-    HttpResponse(StatusCodes.BadRequest, Common.corsHeaders, HttpEntity(MediaTypes.`application/json`, ""))
+  private def formatBadRequestResponse(message: String): HttpResponse = {
+    HttpResponse(StatusCodes.BadRequest, Common.corsHeaders, HttpEntity(MediaTypes.`application/json`, SimpleMessageResponse(message).toJson.toString()))
   }
 
   private def formatInternalServerErrorResponse(correlationId: String) = {

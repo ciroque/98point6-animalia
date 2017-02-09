@@ -2,7 +2,7 @@ package org.ciroque.animalia.services
 
 import java.util.UUID
 
-import org.ciroque.animalia.models.{Fact, FactFailedResult, FactIdResult}
+import org.ciroque.animalia.models.{Fact, FactIdResult, SimpleMessageResponse}
 import org.ciroque.animalia.persistence.DataStore
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -26,7 +26,7 @@ trait FactService {
     if (Fact.relationshipIsValid(fact.rel)) {
       dataStore.store(fact).map { uuid: UUID => FactIdResult(uuid) }
     } else {
-      Future.failed(FactFailedResult.DefaultErrorResult)
+      Future.failed(SimpleMessageResponse.DefaultErrorResponse)
     }
   }
 }

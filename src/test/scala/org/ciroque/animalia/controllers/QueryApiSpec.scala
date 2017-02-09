@@ -46,7 +46,6 @@ class QueryApiSpec
           Get(s"""$path?s="${query.subject}"&r='${query.rel}'&o='${query.`object`}'""") ~> routes ~> check {
             status shouldBe StatusCodes.OK
             val json = responseAs[String]
-            println(json)
             json shouldBe expected
           }
         }
@@ -82,10 +81,9 @@ class QueryApiSpec
       }
 
       it("returns a 400 when the request is malformed") {
-        pending
         Get(s"""$path?s="BAD"&r='REQUEST'""") ~> Route.seal(routes) ~> check {
           status shouldBe StatusCodes.BadRequest
-          responseAs[String] should include("I can't answer your query.")
+          responseAs[String] should include("missing parameter")
         }
       }
 
@@ -164,10 +162,9 @@ class QueryApiSpec
       }
 
       it("returns a 400 when the request is malformed") {
-        pending
         Get(s"""$path?s="BAD"&r='REQUEST'""") ~> Route.seal(routes) ~> check {
           status shouldBe StatusCodes.BadRequest
-          responseAs[String] should include("I can't answer your query.")
+          responseAs[String] should include("missing parameter")
         }
       }
 

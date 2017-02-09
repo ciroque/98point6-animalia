@@ -3,7 +3,7 @@ package org.ciroque.animalia.services
 import java.util.UUID
 
 import org.ciroque.animalia.Any
-import org.ciroque.animalia.models.{Fact, FactFailedResult, FactIdResult}
+import org.ciroque.animalia.models.{Fact, FactIdResult, SimpleMessageResponse}
 import org.ciroque.animalia.persistence.InMemoryDataStore
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.{FunSpec, Matchers}
@@ -59,7 +59,7 @@ class FactServiceTest
 
         whenReady(factResultFuture.failed) {
           factFailedResult =>
-            factFailedResult shouldBe a[FactFailedResult]
+            factFailedResult shouldBe a[SimpleMessageResponse]
             factFailedResult.getMessage shouldBe "Failed to parse your fact"
         }
       }

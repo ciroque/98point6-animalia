@@ -3,14 +3,13 @@ package org.ciroque.animalia.services
 import org.ciroque.animalia.Any
 import org.ciroque.animalia.models.Fact
 import org.ciroque.animalia.persistence.DataStore
+import org.easymock.EasyMock._
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.easymock.EasyMockSugar
 import org.scalatest.{BeforeAndAfterEach, FunSpec, Matchers}
-import org.easymock.EasyMock._
-
-import scala.concurrent.Future
 
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 class QueryServiceTest
   extends FunSpec
@@ -19,7 +18,7 @@ class QueryServiceTest
     with EasyMockSugar
     with BeforeAndAfterEach {
 
-  val mockDataStore = mock[DataStore]
+  val mockDataStore: DataStore = mock[DataStore]
 
   val service = new QueryService {
     override implicit val dataStore: DataStore = mockDataStore

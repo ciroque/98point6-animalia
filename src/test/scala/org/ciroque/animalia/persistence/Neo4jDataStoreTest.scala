@@ -62,10 +62,6 @@ class Neo4jDataStoreTest
         }
       }
 
-      it("deletes only one of many facts") {
-        pending
-      }
-
       it("does not delete a non-existent fact") {
         val uuid = Any.uuid
         whenReady(dataStore.delete(uuid)) {
@@ -148,7 +144,6 @@ class Neo4jDataStoreTest
           val query = Fact("animal", "has", "fin")
           whenReady(dataStore.query(query)) {
             animals: List[String] =>
-              println(animals)
               animals shouldBe List("herring", "salmon")
           }
         }
@@ -156,7 +151,6 @@ class Neo4jDataStoreTest
           val query = Fact("animal", "eats", "berries")
           whenReady(dataStore.query(query)) {
             animals: List[String] =>
-              println(animals)
               animals shouldBe List("bear", "deer", "skunk")
           }
         }
@@ -164,7 +158,6 @@ class Neo4jDataStoreTest
           val query = Fact("animal", "eats", "mammal")
           whenReady(dataStore.query(query)) {
             animals: List[String] =>
-              println(animals)
               animals shouldBe List("coyote")
           }
         }
@@ -172,7 +165,6 @@ class Neo4jDataStoreTest
           val query = Fact("bear", "has", "scale")
           whenReady(dataStore.query(query)) {
             animals: List[String] =>
-              println(animals)
               animals shouldBe List()
           }
         }
@@ -180,7 +172,6 @@ class Neo4jDataStoreTest
           val query = Fact("fish", "has", "scale")
           whenReady(dataStore.query(query)) {
             animals: List[String] =>
-              println(animals)
               animals shouldBe List()
           }
         }
@@ -188,7 +179,6 @@ class Neo4jDataStoreTest
           val query = Fact("mammal", "lives", "ocean")
           whenReady(dataStore.query(query)) {
             animals: List[String] =>
-              println(animals)
               animals shouldBe List("otter")
           }
         }

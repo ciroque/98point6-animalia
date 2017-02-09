@@ -77,7 +77,6 @@ trait Neo4jDataStore extends DataStore {
   }
 
   override def queryCount(fact: Fact): Future[Int] = {
-    println(s"Neo4jDataStore::queryCount($fact)")
     val result = withSession {
       s"""
         MATCH (subject: Fact { name: '${fact.subject}'})<-[:${fact.rel}]->(object: Fact { name: '${fact.`object`}'})
@@ -142,7 +141,6 @@ trait Neo4jDataStore extends DataStore {
   private def withSession(statement: String): StatementResult = {
     val session = neo4jDriver.session()
     try {
-      println(statement)
       session.run(statement)
     } finally {
       session.close()
